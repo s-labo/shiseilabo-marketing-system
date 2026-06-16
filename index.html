@@ -66,20 +66,10 @@
   .hero .stat .n{font-family:var(--serif);font-size:42px;color:#fff;line-height:1;font-weight:500}
   .hero .stat .l{color:var(--soft);font-size:11px;margin-top:11px;letter-spacing:.14em}
   /* hero two-column + key visual */
-  .hero-grid{display:grid;grid-template-columns:1.32fr .68fr;gap:56px;align-items:center}
+  .hero-grid{display:grid;grid-template-columns:1.3fr .7fr;gap:48px;align-items:center}
   .hero h1{max-width:none}
-  .hero-visual{display:flex;justify-content:center}
-  .kv-card{position:relative;width:100%;max-width:380px;aspect-ratio:3/4;border-radius:14px;padding:26px;display:flex;flex-direction:column;
-    background:radial-gradient(120% 80% at 70% 10%,rgba(63,147,180,.22),transparent),linear-gradient(165deg,#16294a,#0c1626);
-    border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 70px rgba(0,0,0,.35)}
-  .kv-card::after{content:"";position:absolute;inset:10px;border:1px solid rgba(255,255,255,.08);border-radius:9px;pointer-events:none}
-  .kv-top{display:flex;justify-content:space-between;align-items:baseline;position:relative;z-index:1}
-  .kv-top span{font-family:var(--serif);color:#fff;font-size:13px;letter-spacing:.14em}
-  .kv-top small{color:var(--gold2);font-size:9px;letter-spacing:.22em}
-  .kv-bird{flex:1;min-height:0;width:100%;object-fit:contain;object-position:center;margin:10px 0;position:relative;z-index:1;filter:drop-shadow(0 10px 20px rgba(0,0,0,.4))}
-  .kv-cap{position:relative;z-index:1;font-family:var(--serif);color:#fff;font-size:21px;letter-spacing:.04em;line-height:1.5}
-  .kv-cap .kv-rule{display:block;width:42px;height:2px;background:var(--gold);margin-bottom:14px;border-radius:2px}
-  .kv-cap small{display:block;font-family:var(--sans);color:var(--soft);font-size:11px;letter-spacing:.08em;margin-top:8px}
+  .hero-visual{display:flex;justify-content:center;align-items:center}
+  .kv-bird{width:100%;max-width:400px;height:auto;object-fit:contain;filter:drop-shadow(0 16px 30px rgba(0,0,0,.45))}
 
   /* ---------- Section ---------- */
   section.block{padding:106px 0}
@@ -304,11 +294,7 @@
         </div>
       </div>
       <aside class="hero-visual">
-        <div class="kv-card">
-          <div class="kv-top"><span>SHISEILABO INC.</span><small>MARKETING METHOD</small></div>
-          <img class="kv-bird" src="kawasemi-white.png" alt="カワセミ" />
-          <div class="kv-cap"><span class="kv-rule"></span>想像以上を、創造で。<small>創造性で、資産を増やす。</small></div>
-        </div>
+        <img class="kv-bird" src="kawasemi-white.png" alt="カワセミ" />
       </aside>
     </div>
   </section>
