@@ -30,7 +30,9 @@
   .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
   .brand{display:flex;align-items:center;gap:11px;color:#fff;font-weight:700;letter-spacing:.02em}
   .brand .logo{width:30px;height:30px;border:2px solid var(--gold);border-radius:7px;display:grid;place-items:center;color:var(--gold);font-family:var(--serif);font-size:16px}
-  .brand small{display:block;font-size:10px;color:var(--soft);font-weight:400;letter-spacing:.18em}
+  .brand .brandimg{height:46px;width:auto;border-radius:8px;display:block}
+  .brand .brandtag{font-size:10px;color:var(--soft);font-weight:400;letter-spacing:.18em;border-left:1px solid rgba(255,255,255,.18);padding-left:12px;line-height:1.4}
+  @media(max-width:560px){ .brand .brandtag{display:none} }
   .nav nav{display:flex;gap:6px;align-items:center}
   .nav nav a,.nav nav button{color:#cdd3e1;font-size:14px;padding:8px 14px;border-radius:9px;background:none;border:0;cursor:pointer;font-family:inherit;transition:.2s}
   .nav nav a:hover,.nav nav button:hover{color:#fff;background:rgba(255,255,255,.07)}
@@ -220,8 +222,8 @@
 <header class="nav">
   <div class="wrap">
     <a class="brand" href="#" onclick="go('home');return false;">
-      <span class="logo">志</span>
-      <span>SHISEILABO<small>MARKETING STRATEGY SYSTEM</small></span>
+      <img class="brandimg" src="logofile_logo.001.jpeg" alt="SHISEILABO" />
+      <small class="brandtag">MARKETING STRATEGY SYSTEM</small>
     </a>
     <nav>
       <a href="#" onclick="go('home');return false;">メソッド</a>
