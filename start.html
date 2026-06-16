@@ -69,6 +69,28 @@
   .float{animation:floaty 6s ease-in-out infinite}
   @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
   @keyframes spin{to{transform:rotate(360deg)}}
+  /* カワセミのアニメ */
+  .kf{transform-box:fill-box;transform-origin:center bottom;animation:kfbob 3.6s ease-in-out infinite}
+  @keyframes kfbob{0%,100%{transform:translateY(0) rotate(0deg)}22%{transform:translateY(-5px) rotate(-4deg)}40%{transform:translateY(-2px) rotate(0deg)}62%{transform:translateY(-4px) rotate(3deg)}}
+  /* 季節・時間帯の浮遊パーティクル */
+  .garden{position:relative}
+  #gardenSvg{position:relative;line-height:0}
+  .parts{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2}
+  .pt{position:absolute;top:-16px;width:10px;height:10px;opacity:0}
+  .garden.petals .pt{opacity:.85;border-radius:72% 0 72% 0;background:#f3c0d2;animation:petalfall var(--d,8s) linear infinite var(--delay,0s)}
+  .garden.dusk .pt{width:6px;height:6px;border-radius:50%;background:#ffd98a;box-shadow:0 0 9px #ffcf7a;animation:firefly var(--d,6s) ease-in-out infinite var(--delay,0s)}
+  @keyframes petalfall{0%{transform:translateY(-16px) translateX(0) rotate(0);opacity:0}12%{opacity:.85}100%{transform:translateY(360px) translateX(36px) rotate(260deg);opacity:0}}
+  @keyframes firefly{0%,100%{transform:translate(0,0);opacity:.15}50%{transform:translate(16px,-22px);opacity:.95}}
+  /* 100%演出：紙吹雪＋バナー */
+  .confpiece{position:fixed;top:-18px;width:10px;height:14px;z-index:96;pointer-events:none;animation:conffall linear forwards}
+  @keyframes conffall{to{transform:translateY(110vh) rotate(800deg)}}
+  .cbanner{position:fixed;inset:0;display:none;place-items:center;z-index:95;background:rgba(15,27,61,.4);padding:22px}
+  .cbanner.show{display:grid}
+  .cbanner .cc{background:#fff;border-radius:20px;padding:38px 32px;text-align:center;max-width:400px;box-shadow:var(--shadow);animation:pop .55s cubic-bezier(.34,1.56,.64,1)}
+  .cbanner .cc .em{font-size:46px}
+  .cbanner .cc h3{font-family:var(--serif);color:var(--navy);font-size:24px;margin:10px 0 6px}
+  .cbanner .cc p{color:var(--muted);font-size:14px;margin-bottom:22px}
+  @keyframes pop{from{transform:scale(.82);opacity:0}to{transform:none;opacity:1}}
 
   /* ===== question panel ===== */
   .panel{min-width:0}
@@ -170,6 +192,7 @@
     </a>
     <div class="spacer"></div>
     <div class="acts">
+      <button class="btn outline" id="soundBtn" onclick="toggleSound()" title="効果音 ON/OFF" style="padding:9px 12px">🔊</button>
       <button class="btn outline" onclick="openGlossary()">用語集</button>
       <button class="btn outline" onclick="showDoc()">📄 戦略書</button>
       <button class="btn solid" onclick="openSubmit()">☁️ 送信</button>
@@ -248,6 +271,15 @@
   </div>
 </div>
 
+<div class="cbanner" id="cbanner"><div class="cc">
+  <div class="em">🎉🌳🎉</div>
+  <h3>庭が完成しました！</h3>
+  <p>12STEPすべてに答え、あなたのブランドの庭が満開になりました。<br>戦略書を確認して、次の一歩へ。</p>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <button class="btn outline" onclick="document.getElementById('cbanner').classList.remove('show')">庭を眺める</button>
+    <button class="btn solid" onclick="document.getElementById('cbanner').classList.remove('show');showDoc()">戦略書を見る 📄</button>
+  </div>
+</div></div>
 <div class="toast" id="toast"></div>
 
 <script src="shisei-data.js"></script>
@@ -304,7 +336,7 @@ const GROW=[
 function gardenSVG(){
   return `<svg viewBox="0 0 440 460" xmlns="http://www.w3.org/2000/svg" aria-label="ブランドの庭">
     <defs>
-      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16294a"/><stop offset=".62" stop-color="#3a4f6e"/><stop offset="1" stop-color="#f3e7d2"/></linearGradient>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop id="skyT" offset="0" stop-color="#16294a"/><stop id="skyM" offset=".62" stop-color="#3a4f6e"/><stop id="skyB" offset="1" stop-color="#f3e7d2"/></linearGradient>
       <linearGradient id="grnd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7eae64"/><stop offset="1" stop-color="#5b8a4c"/></linearGradient>
       <linearGradient id="soil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6a45"/><stop offset="1" stop-color="#6b4f33"/></linearGradient>
       <linearGradient id="pond" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4d9fbf"/><stop offset="1" stop-color="#1d566f"/></linearGradient>
@@ -312,7 +344,7 @@ function gardenSVG(){
     </defs>
     <rect width="440" height="460" fill="url(#sky)"/>
     <!-- sun -->
-    <g class="grow float" data-i="3"><circle cx="350" cy="96" r="34" fill="url(#sun)"/></g>
+    <g class="grow float" data-i="3"><circle id="sunGlow" cx="350" cy="96" r="48" fill="#ffcf8a" opacity=".18"/><circle id="sunC" cx="350" cy="96" r="34" fill="#ffcf8a"/></g>
     <g class="grow" data-i="16"><g stroke="#f0c98a" stroke-width="3" stroke-linecap="round" opacity=".7">
       <line x1="350" y1="40" x2="350" y2="22"/><line x1="350" y1="152" x2="350" y2="170"/><line x1="294" y1="96" x2="276" y2="96"/><line x1="406" y1="96" x2="424" y2="96"/>
       <line x1="312" y1="58" x2="300" y2="46"/><line x1="388" y1="58" x2="400" y2="46"/><line x1="312" y1="134" x2="300" y2="146"/><line x1="388" y1="134" x2="400" y2="146"/></g></g>
@@ -346,7 +378,7 @@ function gardenSVG(){
     <g class="grow" data-i="10"><ellipse cx="250" cy="430" rx="92" ry="30" fill="url(#pond)"/><ellipse cx="250" cy="424" rx="60" ry="14" fill="#ffffff" opacity=".12"/></g>
     <g class="grow" data-i="11"><ellipse cx="222" cy="436" rx="16" ry="6" fill="#4f9e6f"/><ellipse cx="280" cy="430" rx="14" ry="5" fill="#5cab7c"/></g>
     <!-- kingfisher (brand) -->
-    <g class="grow float" data-i="13">
+    <g class="grow kf" data-i="13">
       <rect x="300" y="392" width="60" height="5" rx="2" fill="#7a5a3c" transform="rotate(-6 330 394)"/>
       <ellipse cx="326" cy="372" rx="14" ry="18" fill="#2f7d9e"/>
       <circle cx="326" cy="352" r="13" fill="#2f7d9e"/>
@@ -362,9 +394,66 @@ function gardenSVG(){
 }
 function flower(x,y,c){ return `<g transform="translate(${x},${y})"><rect x="-1.5" y="0" width="3" height="14" fill="#5b8a4c"/>${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-7" rx="4" ry="7" fill="${c}" transform="rotate(${a})"/>`).join('')}<circle cx="0" cy="0" r="3.2" fill="#ffe08a"/></g>`; }
 
+/* 時間帯（完成度で朝→昼→黄昏→祝祭へ） */
+const SKY=[
+  {p:0,  top:'#16294a',mid:'#3a4f6e',bot:'#f3e7d2',sun:'#e58a4f',sy:96 }, // 夜明け
+  {p:16, top:'#1d3a5e',mid:'#5b7da0',bot:'#f6ecd6',sun:'#ffcf8a',sy:86 }, // 朝
+  {p:36, top:'#2f6aa0',mid:'#9cc1de',bot:'#fbf3e0',sun:'#ffe1a8',sy:74 }, // 昼
+  {p:56, top:'#2a4a78',mid:'#cf9362',bot:'#f7d6ad',sun:'#ff9e57',sy:118}, // 黄昏
+  {p:80, top:'#1a2f52',mid:'#46608c',bot:'#ecd2a4',sun:'#ffb86b',sy:120}, // 夕暮れ
+  {p:100,top:'#2a5690',mid:'#a8cbe6',bot:'#fff3d6',sun:'#ffd27a',sy:70 }, // 祝祭
+];
+function skyFor(p){ let s=SKY[0]; for(const x of SKY){ if(p>=x.p) s=x; } return s; }
+function applySky(p){
+  const s=skyFor(p);
+  const set=(id,c)=>{ const e=document.getElementById(id); if(e) e.setAttribute('stop-color',c); };
+  set('skyT',s.top); set('skyM',s.mid); set('skyB',s.bot);
+  const sun=document.getElementById('sunC'), gl=document.getElementById('sunGlow');
+  if(sun){ sun.setAttribute('fill',s.sun); sun.setAttribute('cy',s.sy); }
+  if(gl){ gl.setAttribute('fill',s.sun); gl.setAttribute('cy',s.sy); }
+  const g=document.querySelector('.garden');
+  if(g){ g.classList.toggle('petals',p>=36&&p<70); g.classList.toggle('dusk',p>=70); }
+}
+function buildParticles(){
+  const host=document.getElementById('gardenSvg'); if(!host||host.querySelector('.parts')) return;
+  const d=document.createElement('div'); d.className='parts';
+  for(let i=0;i<9;i++){ const s=document.createElement('span'); s.className='pt';
+    s.style.left=(6+Math.random()*88)+'%'; s.style.setProperty('--d',(6+Math.random()*5).toFixed(1)+'s'); s.style.setProperty('--delay',(-Math.random()*8).toFixed(1)+'s'); d.appendChild(s); }
+  host.appendChild(d);
+}
+
+/* 効果音（Web Audio・外部ファイル不要） */
+let actx=null, soundOn=(localStorage.getItem('shisei_sound')||'on')==='on';
+function ac(){ if(!actx){ try{ actx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(actx&&actx.state==='suspended') actx.resume(); return actx; }
+function tone(freq,dur,type,vol,when){ const a=ac(); if(!a||!soundOn) return; type=type||'sine'; vol=vol||0.05; when=when||0; const t=a.currentTime+when; const o=a.createOscillator(),g=a.createGain(); o.type=type; o.frequency.value=freq; o.connect(g); g.connect(a.destination); g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(vol,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur+0.03); }
+function sfxPop(){ tone(523,0.12,'sine',0.04); }
+function sfxGrow(){ tone(659,0.16,'triangle',0.05); tone(988,0.2,'sine',0.035,0.06); }
+function sfxStep(){ [523,659,784].forEach((f,i)=>tone(f,0.24,'triangle',0.05,i*0.08)); }
+function sfxFanfare(){ [523,659,784,1046,1318,1568].forEach((f,i)=>tone(f,0.55,'triangle',0.06,i*0.12)); }
+function updateSoundBtn(){ const b=document.getElementById('soundBtn'); if(b) b.textContent=soundOn?'🔊':'🔇'; }
+function toggleSound(){ soundOn=!soundOn; localStorage.setItem('shisei_sound',soundOn?'on':'off'); updateSoundBtn(); if(soundOn) sfxPop(); }
+
+/* 100%演出 */
+let _done100=false;
+function confetti(){
+  const cols=['#D96A2C','#e58a4f','#6fae5a','#9ccb7e','#f0a0c0','#ffd76a','#2f7d9e','#fff'];
+  for(let i=0;i<70;i++){ const p=document.createElement('div'); p.className='confpiece';
+    p.style.left=Math.random()*100+'vw'; p.style.background=cols[i%cols.length];
+    p.style.animationDuration=(2.4+Math.random()*2.6).toFixed(2)+'s'; p.style.animationDelay=(Math.random()*0.6).toFixed(2)+'s';
+    p.style.transform='rotate('+(Math.random()*360)+'deg)'; if(i%3===0) p.style.borderRadius='50%';
+    document.body.appendChild(p); setTimeout(()=>p.remove(),5600); }
+}
+function celebrate(){ if(_done100) return; _done100=true;
+  // 満開の祝祭空に
+  const s=SKY[SKY.length-1], set=(id,c)=>{const e=document.getElementById(id);if(e)e.setAttribute('stop-color',c);};
+  set('skyT',s.top); set('skyM',s.mid); set('skyB',s.bot);
+  const g=document.querySelector('.garden'); if(g){ g.classList.remove('dusk'); g.classList.add('petals'); }
+  confetti(); sfxFanfare(); setTimeout(()=>document.getElementById('cbanner').classList.add('show'),420);
+}
+
 function renderGarden(){
   const host=document.getElementById('gardenSvg');
-  if(!host.dataset.built){ host.innerHTML=gardenSVG(); host.dataset.built='1'; }
+  if(!host.dataset.built){ host.innerHTML=gardenSVG(); host.dataset.built='1'; buildParticles(); }
   const c=answeredCount(), p=scorePct();
   let grown=0;
   GROW.forEach((g,idx)=>{ const els=host.querySelectorAll('[data-i="'+idx+'"]'); const on=c>=g.th; els.forEach(e=>e.classList.toggle('in',on)); if(on) grown++; });
@@ -372,17 +461,19 @@ function renderGarden(){
   document.getElementById('grownCount').textContent=grown;
   document.getElementById('grownMax').textContent=GROW.length;
   document.getElementById('scorePct2').textContent=p+'%';
-  const st=stageFor(p);
-  document.getElementById('stageName').textContent=st.name;
-  document.getElementById('stageLv').textContent=st.lv;
-  document.getElementById('gardenEnc').textContent=encourageMsg(p);
-  // 新しく育った要素のメッセージ
+  const full=grown>=GROW.length, st=stageFor(p);
+  document.getElementById('stageName').textContent=full?'満開の庭':st.name;
+  document.getElementById('stageLv').textContent=full?'STAGE ★':st.lv;
+  document.getElementById('gardenEnc').textContent=full?'庭が満開になりました！':encourageMsg(p);
+  applySky(p);
   if(grown>prevGrown){
+    sfxGrow();
     const justNames=GROW.filter(g=>c>=g.th).slice(prevGrown,grown).map(g=>g.name);
     const nm=justNames[justNames.length-1];
     if(nm){ const m=document.getElementById('grewMsg'); m.textContent='🌿 庭に「'+nm+'」が増えました！'; m.classList.add('show'); clearTimeout(window._gm); window._gm=setTimeout(()=>m.classList.remove('show'),3200); }
   }
   prevGrown=grown;
+  if(grown>=GROW.length) celebrate();   // 庭が満開（全設問に回答）で祝祭
 }
 
 /* ============================================================
@@ -423,7 +514,7 @@ function renderStep(){
       ${cur===STEPS.length-1?`<button class="btn solid" onclick="showDoc()">戦略書を見る 📄</button>`:`<button class="btn dark" onclick="nextStep()">保存して次へ →</button>`}
     </div>`;
   document.querySelectorAll('#stepBody textarea').forEach(t=>{
-    t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; setAns(sn,qid,e.target.value); updateQScore(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
+    t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
   s.questions.forEach(q=>updateQScore(s.no,q.id));
   renderPills(); renderGarden();
@@ -432,7 +523,7 @@ function pick(el,s,q,text){
   const ta=document.querySelector(`#stepBody textarea[data-s="${s}"][data-q="${q}"]`); if(!ta) return;
   let parts=ta.value.split(/[、,\n]/).map(x=>x.trim()).filter(Boolean); const i=parts.indexOf(text);
   if(i>=0){parts.splice(i,1);el.classList.remove('on');}else{parts.push(text);el.classList.add('on');}
-  ta.value=parts.join('、'); setAns(s,q,ta.value); updateQScore(s,q); renderPills(); renderGarden();
+  ta.value=parts.join('、'); setAns(s,q,ta.value); sfxPop(); updateQScore(s,q); renderPills(); renderGarden();
   clearTimeout(window._sv); window._sv=setTimeout(()=>{save(false);checkStepComplete(s);},400);
 }
 function updateQScore(s,q){
@@ -447,7 +538,7 @@ const _celebrated=new Set();
 function checkStepComplete(no){
   const s=STEPS.find(x=>x.no===no), a=state.answers[no]||{};
   const all=s.questions.every(q=>(a[q.id]||'').trim());
-  if(all&&!_celebrated.has(no)){ _celebrated.add(no); const g=s.questions.reduce((p,q)=>p+qPoints(a[q.id]),0); toast(`🎉 STEP${no} 完了！ +${g}pt 庭が育ちました`); }
+  if(all&&!_celebrated.has(no)){ _celebrated.add(no); const g=s.questions.reduce((p,q)=>p+qPoints(a[q.id]),0); sfxStep(); toast(`🎉 STEP${no} 完了！ +${g}pt 庭が育ちました`); }
   else if(!all){ _celebrated.delete(no); }
 }
 
@@ -509,8 +600,10 @@ let _tt; function toast(m){ const e=document.getElementById('toast'); e.textCont
 /* init */
 (function(){
   const m=location.hash.match(/s=(\d+)/); if(m){ const n=+m[1]; if(n>=1&&n<=STEPS.length) cur=n-1; }
-  // 既存回答に応じて庭の初期状態を即時反映
-  renderGarden(); prevGrown=GROW.filter(g=>answeredCount()>=g.th).length;
+  updateSoundBtn();
+  // 読み込み時は効果音・演出を鳴らさない（庭の初期状態だけ反映）
+  prevGrown=GROW.filter(g=>answeredCount()>=g.th).length;
+  if(prevGrown>=GROW.length) _done100=true;   // 既に満開なら再演出しない
   renderStep();
 })();
 </script>
