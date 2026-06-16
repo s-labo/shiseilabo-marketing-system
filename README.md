@@ -19,7 +19,9 @@ Cloudflare Pages Functions + D1（バックエンド）で構成され、GitHub 
 
 ## 構成
 ```
-index.html            … フロントエンド（LP＋ウィザード＋戦略書＋アドバイザー）
+index.html            … LP（トップ）＋アドバイザー管理画面＋用語集
+start.html            … 戦略立案ツール（独立ページ）。回答が進むと「ブランドの庭」が育つ＋戦略書/送信
+shisei-data.js        … 12STEPメソッドの共有データ（PHASES/STEPS/GLOSSARY）。index.html と start.html で共用
 functions/api/        … Pages Functions（API）
   submit.js   POST  企業の送信（新規/更新）
   mine.js     GET   企業が自分の回答+アドバイスを取得
