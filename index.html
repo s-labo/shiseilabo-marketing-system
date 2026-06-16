@@ -76,7 +76,7 @@
   .kv-top{display:flex;justify-content:space-between;align-items:baseline;position:relative;z-index:1}
   .kv-top span{font-family:var(--serif);color:#fff;font-size:13px;letter-spacing:.14em}
   .kv-top small{color:var(--gold2);font-size:9px;letter-spacing:.22em}
-  .kv-bird{flex:1;width:100%;height:auto;margin:6px 0;position:relative;z-index:1;filter:drop-shadow(0 12px 22px rgba(0,0,0,.35))}
+  .kv-bird{flex:1;min-height:0;width:100%;object-fit:contain;object-position:center;margin:10px 0;position:relative;z-index:1;filter:drop-shadow(0 10px 20px rgba(0,0,0,.4))}
   .kv-cap{position:relative;z-index:1;font-family:var(--serif);color:#fff;font-size:21px;letter-spacing:.04em;line-height:1.5}
   .kv-cap .kv-rule{display:block;width:42px;height:2px;background:var(--gold);margin-bottom:14px;border-radius:2px}
   .kv-cap small{display:block;font-family:var(--sans);color:var(--soft);font-size:11px;letter-spacing:.08em;margin-top:8px}
@@ -306,46 +306,7 @@
       <aside class="hero-visual">
         <div class="kv-card">
           <div class="kv-top"><span>SHISEILABO INC.</span><small>MARKETING METHOD</small></div>
-          <svg class="kv-bird" viewBox="0 0 320 384" xmlns="http://www.w3.org/2000/svg" aria-label="カワセミ">
-            <defs>
-              <linearGradient id="kvTeal" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#3f93b4"/><stop offset="1" stop-color="#1d566f"/>
-              </linearGradient>
-              <linearGradient id="kvTealDk" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#2c6e8c"/><stop offset="1" stop-color="#163f53"/>
-              </linearGradient>
-              <linearGradient id="kvOr" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stop-color="#e58a4f"/><stop offset="1" stop-color="#cf5f24"/>
-              </linearGradient>
-            </defs>
-            <!-- branch -->
-            <path d="M34 322 C120 300 210 312 296 296" stroke="#caa06a" stroke-width="7" fill="none" stroke-linecap="round" opacity=".85"/>
-            <path d="M150 322 q40 -6 70 -16" stroke="#b98b53" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
-            <!-- tail -->
-            <path d="M196 250 L243 332 L200 286 Z" fill="url(#kvTealDk)"/>
-            <!-- body -->
-            <ellipse cx="170" cy="226" rx="60" ry="74" fill="url(#kvTeal)"/>
-            <!-- wing -->
-            <path d="M196 170 C232 184 240 244 214 286 C206 252 196 214 184 188 Z" fill="url(#kvTealDk)"/>
-            <!-- breast (orange) -->
-            <path d="M150 176 C112 196 104 250 126 286 C150 300 168 290 172 262 C178 220 176 192 168 176 Z" fill="url(#kvOr)"/>
-            <!-- throat -->
-            <ellipse cx="126" cy="168" rx="20" ry="16" fill="#f3efe6"/>
-            <!-- feet -->
-            <path d="M150 292 L150 318 M168 290 L172 316" stroke="#1c2a40" stroke-width="5" fill="none" stroke-linecap="round"/>
-            <!-- head -->
-            <circle cx="150" cy="112" r="54" fill="url(#kvTeal)"/>
-            <!-- cheek patch -->
-            <path d="M108 120 C108 142 124 152 140 150 C150 130 150 108 140 92 C122 92 108 102 108 120 Z" fill="url(#kvOr)"/>
-            <!-- white ear spot -->
-            <circle cx="170" cy="92" r="11" fill="#f3efe6" opacity=".9"/>
-            <!-- beak -->
-            <path d="M101 116 L14 150 L104 134 Z" fill="#16263c"/>
-            <path d="M101 124 L14 150 L104 138 Z" fill="#e58a4f"/>
-            <!-- eye -->
-            <circle cx="128" cy="108" r="8" fill="#10203a"/>
-            <circle cx="131" cy="105" r="2.4" fill="#fff"/>
-          </svg>
+          <img class="kv-bird" src="kawasemi-white.png" alt="カワセミ" />
           <div class="kv-cap"><span class="kv-rule"></span>想像以上を、創造で。<small>創造性で、資産を増やす。</small></div>
         </div>
       </aside>
