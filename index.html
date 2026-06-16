@@ -149,36 +149,59 @@
   .btn.dark{background:var(--navy);color:#fff}
   .btn.dark:hover{background:var(--navy2)}
 
-  .wizlayout{display:grid;grid-template-columns:260px 1fr;gap:34px;padding:36px 0 80px}
-  .stepnav{position:sticky;top:150px;align-self:start;max-height:calc(100vh - 170px);overflow:auto}
-  .stepnav .phgrp{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.1em;margin:18px 0 8px}
-  .stepnav .phgrp:first-child{margin-top:0}
-  .stepnav button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:8px 10px;border-radius:9px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--ink);transition:.15s}
-  .stepnav button:hover{background:#fff}
-  .stepnav button.cur{background:var(--navy);color:#fff}
-  .stepnav button .ix{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:11px;flex:none;color:var(--muted)}
-  .stepnav button.cur .ix{border-color:var(--gold);color:var(--gold2)}
-  .stepnav button.done .ix{background:var(--good);border-color:var(--good);color:#fff}
+  /* 経営者向けに白基調 */
+  #view-wizard,#view-doc,#view-advisor{background:#fff}
 
-  .stepmain{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:40px;box-shadow:var(--shadow);min-height:60vh}
+  /* 1カラム入力レイアウト */
+  .wizlayout{display:block;max-width:760px;margin:0 auto;padding:36px 0 100px}
+
+  /* STEP一覧（ドロワー） */
+  .navback{position:fixed;inset:0;background:rgba(15,27,61,.42);opacity:0;pointer-events:none;transition:.3s;z-index:55}
+  .navback.open{opacity:1;pointer-events:auto}
+  .stepnav{position:fixed;top:0;left:0;height:100vh;width:316px;max-width:86vw;background:#fff;box-shadow:0 0 70px rgba(15,27,61,.25);padding:20px 18px 28px;overflow:auto;transform:translateX(-100%);transition:transform .3s cubic-bezier(.2,.7,.2,1);z-index:60}
+  .stepnav.open{transform:none}
+  .stepnav .navhd{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .stepnav .navhd b{font-family:var(--serif);color:var(--navy);font-size:15px}
+  .stepnav .navhd button{border:0;background:var(--bg);width:30px;height:30px;border-radius:50%;font-size:17px;cursor:pointer;color:var(--muted)}
+  .stepnav .phgrp{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.1em;margin:16px 0 6px}
+  .stepnav button.snav{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:9px 10px;border-radius:9px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--ink);transition:.15s}
+  .stepnav button.snav:hover{background:var(--bg)}
+  .stepnav button.snav.cur{background:var(--navy);color:#fff}
+  .stepnav button.snav .ix{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:11px;flex:none;color:var(--muted)}
+  .stepnav button.snav.cur .ix{border-color:var(--gold);color:var(--gold2)}
+  .stepnav button.snav.done .ix{background:var(--good);border-color:var(--good);color:#fff}
+
+  .stepmain{background:#fff;border:0;border-radius:0;padding:4px 0 0;box-shadow:none;min-height:auto}
   .stepmain .badge{display:inline-block;font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.12em}
-  .stepmain h2{font-family:var(--serif);font-size:26px;color:var(--navy);margin:8px 0 4px;font-weight:600}
-  .stepmain .purpose{color:var(--muted);font-size:14px;background:var(--bg);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;margin:18px 0 8px}
-  .fwbar{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 28px}
+  .stepmain h2{font-family:var(--serif);font-size:clamp(23px,3vw,30px);color:var(--navy);margin:8px 0 4px;font-weight:600;line-height:1.45}
+  .stepmain .purpose{color:var(--muted);font-size:14px;background:var(--bg);border-left:3px solid var(--gold);padding:15px 18px;border-radius:0 10px 10px 0;margin:18px 0 8px;line-height:1.85}
+  .fwbar{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 30px}
   .fwbar .chip{background:#fbf7ec;border-color:#ecdcb4;color:#9a7a2a;font-size:11px}
-  .qblock{margin-bottom:26px}
-  .qblock label{display:block;font-weight:700;color:var(--navy);font-size:15px;margin-bottom:4px}
-  .qblock .hint{color:var(--soft);font-size:12.5px;margin-bottom:10px}
-  .qblock label .qno{display:inline-block;min-width:34px;color:var(--gold);font-family:var(--serif);font-weight:600;font-size:14px;margin-right:4px}
-  .opts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:11px}
-  .opt{font-size:13px;background:#fff;border:1px solid var(--line);color:var(--ink);padding:7px 14px;border-radius:40px;cursor:pointer;font-family:inherit;transition:.15s}
-  .opt:hover{border-color:var(--gold)}
+  .qblock{margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+  .qblock:last-of-type{border-bottom:0}
+  .qblock label{display:block;font-weight:700;color:var(--navy);font-size:16.5px;margin-bottom:6px;line-height:1.6}
+  .qblock .hint{color:var(--soft);font-size:13px;margin-bottom:12px}
+  .qblock label .qno{display:inline-block;min-width:40px;color:var(--gold);font-family:var(--serif);font-weight:600;font-size:17px;margin-right:6px}
+  .opts{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:13px}
+  .opt{font-size:13.5px;background:#fff;border:1px solid var(--line);color:var(--ink);padding:9px 16px;border-radius:40px;cursor:pointer;font-family:inherit;transition:.15s}
+  .opt:hover{border-color:var(--gold);color:var(--gold)}
   .opt.on{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700}
-  .qblock textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:14px;font-family:inherit;font-size:14px;line-height:1.7;resize:vertical;min-height:84px;background:#fcfcfa;transition:.2s}
-  .qblock textarea:focus{outline:0;border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(200,162,74,.13)}
-  .outputnote{margin-top:6px;padding:14px 18px;border:1px dashed var(--line);border-radius:11px;font-size:13px;color:var(--muted);background:var(--bg)}
+  .qblock textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:15px 16px;font-family:inherit;font-size:15px;line-height:1.8;resize:vertical;min-height:92px;background:#fcfbf9;transition:.2s}
+  .qblock textarea:focus{outline:0;border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(217,106,44,.13)}
+  /* 設問ごとの充実度スコア */
+  .qscore{display:flex;align-items:center;gap:10px;margin-top:10px;max-height:0;overflow:hidden;opacity:0;transition:.25s}
+  .qscore.show{max-height:40px;opacity:1}
+  .qscore .dots{display:inline-flex;gap:4px}
+  .qscore .dots i{width:8px;height:8px;border-radius:50%;background:#e2ddd0}
+  .qscore .dots i.on{background:var(--gold)}
+  .qscore .lab{font-size:12.5px;color:var(--good);font-weight:700}
+  .qscore .lab b{color:var(--gold)}
+  .outputnote{margin-top:10px;padding:15px 18px;border:1px dashed var(--line);border-radius:11px;font-size:13.5px;color:var(--muted);background:var(--bg)}
   .outputnote b{color:var(--navy)}
-  .stepfoot{display:flex;justify-content:space-between;margin-top:34px;padding-top:24px;border-top:1px solid var(--line)}
+  .stepfoot{display:flex;justify-content:space-between;margin-top:36px;padding-top:26px;border-top:1px solid var(--line)}
+  /* ツールバーのスコア表示 */
+  #progPct{color:var(--navy);font-weight:700}
+  .progress .encourage{font-size:11.5px;color:var(--gold);margin-top:7px;font-weight:700;letter-spacing:.02em}
 
   /* advisor comment shown in wizard (read mode) */
   .advisorbox{margin-top:12px;border:1px solid #cfe0d4;background:#f3faf5;border-radius:11px;padding:14px 16px}
@@ -190,6 +213,10 @@
   .doc .dochead{text-align:center;border-bottom:2px solid var(--navy);padding-bottom:26px;margin-bottom:30px}
   .doc .dochead .t{font-family:var(--serif);font-size:28px;color:var(--navy)}
   .doc .dochead .s{color:var(--muted);font-size:13px;margin-top:8px}
+  .doc .docscore{display:inline-flex;align-items:center;gap:16px;margin-top:18px;padding:14px 22px;border:1px solid var(--line);border-radius:12px;background:var(--bg);text-align:left}
+  .doc .docscore .g{font-family:var(--serif);font-size:38px;font-weight:700;color:var(--gold);line-height:1;width:48px;text-align:center}
+  .doc .docscore .sc{font-size:13px;color:var(--muted);line-height:1.6}
+  .doc .docscore .sc b{color:var(--navy);font-size:15px}
   .docstep{margin-bottom:30px;padding-bottom:24px;border-bottom:1px dashed var(--line)}
   .docstep h3{font-size:17px;color:var(--navy);display:flex;gap:10px;align-items:baseline}
   .docstep h3 .no{color:var(--gold);font-family:var(--serif);font-size:15px}
@@ -235,11 +262,8 @@
     .flowstep:not(:last-child)::after{display:none}
     .phaserow{grid-template-columns:1fr;gap:16px}
     .phasemeta .pdesc{max-width:none}
-    .wizlayout{grid-template-columns:1fr}
-    .stepnav{position:static;max-height:none;display:none}
-    .stepnav.open{display:block}
     .nav nav{display:none}
-    .stepmain,.doc,.panel{padding:24px}
+    .doc,.panel{padding:24px}
     .hero{padding:72px 0 60px}
     .hero h1{font-size:clamp(26px,7.4vw,34px);line-height:1.42}
     .hero p.lead{margin-top:24px;line-height:1.9}
@@ -377,20 +401,22 @@
   <div class="toolbar">
     <div class="wrap">
       <div class="progress">
-        <div class="meta"><span id="progLabel">STEP 1 / 12</span><span id="progPct">0% 完了</span></div>
+        <div class="meta"><span id="progLabel">STEP 1 / 12</span><span id="progPct">完成度 0%</span></div>
         <div class="bar"><i id="progBar"></i></div>
+        <div class="encourage" id="encourage">さあ、はじめましょう。</div>
       </div>
       <div class="acts">
-        <button class="btn outline sm navtoggle" onclick="document.querySelector('.stepnav').classList.toggle('open')">STEP一覧</button>
+        <button class="btn outline sm" onclick="toggleNav()">☰ STEP一覧</button>
         <button class="btn outline sm" onclick="go('doc')">📄 戦略書を見る</button>
         <button class="btn outline sm" onclick="checkAdvice()">💬 アドバイス確認</button>
         <button class="btn dark sm" onclick="openSubmitModal()">☁️ シセイラボに送信</button>
       </div>
     </div>
   </div>
+  <div class="navback" id="navback" onclick="toggleNav()"></div>
+  <aside class="stepnav" id="stepNav"></aside>
   <div class="wrap">
     <div class="wizlayout">
-      <aside class="stepnav" id="stepNav"></aside>
       <section class="stepmain" id="stepMain"></section>
     </div>
   </div>
@@ -728,8 +754,58 @@ function pickOption(el,stepNo,qid,text){
   else { parts.push(text); el.classList.add('on'); }
   ta.value=parts.join('、');
   setAns(stepNo,qid,ta.value);
+  updateQScore(stepNo,qid); refreshScore(); checkStepComplete(stepNo);
   clearTimeout(window._sv); window._sv=setTimeout(()=>saveNow(false),400);
 }
+
+/* ============================================================
+   スコアリング（テスト形式で完成度を可視化しモチベーションを高める）
+   ============================================================ */
+const MAXQ=12;
+function qPoints(t){ t=(t||'').trim(); if(!t) return 0; const n=t.length; if(n<15) return 6; if(n<60) return 9; return 12; }
+function qLevel(t){ const p=qPoints(t); return p?(p===6?1:p===9?2:3):0; }
+function totalQuestions(){ return STEPS.reduce((a,s)=>a+s.questions.length,0); }
+function totalScore(){ let s=0; STEPS.forEach(st=>{ const a=state.answers[st.no]||{}; st.questions.forEach(q=>{ s+=qPoints(a[q.id]); }); }); return s; }
+function maxScore(){ return totalQuestions()*MAXQ; }
+function scorePct(){ return Math.round(totalScore()/maxScore()*100); }
+function gradeFor(pct){ return pct>=90?'S':pct>=75?'A':pct>=60?'B':pct>=40?'C':'D'; }
+function encourageMsg(pct){
+  if(pct<=0) return 'さあ、はじめましょう。';
+  if(pct<25) return 'いいスタートです。この調子で。';
+  if(pct<50) return '順調に進んでいます。';
+  if(pct<75) return '戦略の輪郭が見えてきました。';
+  if(pct<100) return 'あと少しで完成です！';
+  return '完成度100%！戦略書が整いました。';
+}
+function refreshScore(){
+  const pct=scorePct(), tot=totalScore();
+  const bar=document.getElementById('progBar'); if(bar) bar.style.width=pct+'%';
+  const pp=document.getElementById('progPct'); if(pp) pp.textContent=`完成度 ${pct}%・${tot}pt`;
+  const lb=document.getElementById('progLabel'); if(lb) lb.textContent=`STEP ${cur+1} / 12`;
+  const en=document.getElementById('encourage'); if(en) en.textContent=encourageMsg(pct);
+}
+function updateQScore(stepNo,qid){
+  const el=document.getElementById('qs-'+stepNo+'-'+qid); if(!el) return;
+  const t=ans(stepNo,qid), lv=qLevel(t), p=qPoints(t);
+  if(!lv){ el.className='qscore'; el.innerHTML=''; return; }
+  const lab=lv===1?'記入OK ― もう少し具体的に書くと精度UP':lv===2?'いいですね':'充実した回答です';
+  el.innerHTML=`<span class="dots">${[1,2,3].map(i=>`<i class="${i<=lv?'on':''}"></i>`).join('')}</span><span class="lab">${lab} <b>+${p}pt</b></span>`;
+  el.className='qscore show';
+}
+const _celebrated=new Set();
+function checkStepComplete(stepNo){
+  const s=STEPS.find(x=>x.no===stepNo), a=state.answers[stepNo]||{};
+  const all=s.questions.every(q=>(a[q.id]||'').trim());
+  if(all && !_celebrated.has(stepNo)){
+    _celebrated.add(stepNo);
+    const gained=s.questions.reduce((p,q)=>p+qPoints(a[q.id]),0);
+    toast(`🎉 STEP${stepNo} 完了！ +${gained}pt 獲得`);
+  } else if(!all){ _celebrated.delete(stepNo); }
+}
+
+/* STEP一覧ドロワー */
+function toggleNav(){ const n=document.getElementById('stepNav'), b=document.getElementById('navback'); const open=!n.classList.contains('open'); n.classList.toggle('open',open); b.classList.toggle('open',open); }
+function closeNav(){ document.getElementById('stepNav')?.classList.remove('open'); document.getElementById('navback')?.classList.remove('open'); }
 
 /* ============================================================
    Router
@@ -773,12 +849,12 @@ function renderOverview(){
    ============================================================ */
 function renderNav(){
   const host=document.getElementById('stepNav');
-  let html='';
+  let html='<div class="navhd"><b>STEP一覧</b><button onclick="closeNav()" aria-label="閉じる">×</button></div>';
   PHASES.forEach(ph=>{
     html+=`<div class="phgrp">${ph.name}</div>`;
     STEPS.filter(s=>s.phase===ph.key).forEach(s=>{
       const i=s.no-1;
-      html+=`<button class="${i===cur?'cur':''} ${stepDone(s.no)?'done':''}" onclick="cur=${i};renderStep()">
+      html+=`<button class="snav ${i===cur?'cur':''} ${stepDone(s.no)?'done':''}" onclick="cur=${i};closeNav();renderStep()">
         <span class="ix">${stepDone(s.no)?'✓':s.no}</span><span>${s.title}</span></button>`;
     });
   });
@@ -797,14 +873,15 @@ function renderStep(){
     <div class="fwbar">${s.frameworks.map(f=>`<span class="chip">#${f}</span>`).join('')}</div>
     ${comment?`<div class="advisorbox"><div class="h">🧭 シセイラボからのアドバイス</div><p>${esc(comment)}</p></div>`:''}
     ${s.questions.map((q,i)=>{
-      const cur=ans(s.no,q.id);
-      const selected=cur.split(/[、,\n]/).map(x=>x.trim()).filter(Boolean);
+      const val=ans(s.no,q.id);
+      const selected=val.split(/[、,\n]/).map(x=>x.trim()).filter(Boolean);
       const opts=q.options?`<div class="opts">${q.options.map(o=>`<button type="button" class="opt${selected.includes(o)?' on':''}" onclick="pickOption(this,${s.no},'${q.id}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div>`:'';
       return `<div class="qblock">
         <label><span class="qno">Q${qStart(s.no)+i+1}.</span>${q.label}</label>
         <div class="hint">${q.hint}</div>
         ${opts}
-        <textarea data-step="${s.no}" data-q="${q.id}" placeholder="ここに自社の状況を入力…">${esc(cur)}</textarea>
+        <textarea data-step="${s.no}" data-q="${q.id}" placeholder="ここに自社の状況を入力…">${esc(val)}</textarea>
+        <div class="qscore" id="qs-${s.no}-${q.id}"></div>
       </div>`;
     }).join('')}
     <div class="outputnote">📦 <b>このSTEPの成果物：</b>${s.output}</div>
@@ -816,22 +893,19 @@ function renderStep(){
     </div>`;
   main.querySelectorAll('textarea').forEach(t=>{
     t.addEventListener('input',e=>{
-      setAns(+e.target.dataset.step,e.target.dataset.q,e.target.value);
-      clearTimeout(window._sv); window._sv=setTimeout(()=>saveNow(false),600);
+      const st=+e.target.dataset.step, qid=e.target.dataset.q;
+      setAns(st,qid,e.target.value);
+      updateQScore(st,qid); refreshScore();
+      clearTimeout(window._sv); window._sv=setTimeout(()=>{ saveNow(false); checkStepComplete(st); },600);
     });
   });
+  s.questions.forEach(q=>updateQScore(s.no,q.id));
   renderNav();
-  updateProgress();
-  document.querySelector('.stepnav')?.classList.remove('open');
+  refreshScore();
+  closeNav();
+  window.scrollTo(0,0);
 }
-
-function updateProgress(){
-  const done=totalDone(), pct=Math.round(done/STEPS.length*100);
-  document.getElementById('progLabel').textContent=`STEP ${cur+1} / 12`;
-  document.getElementById('progPct').textContent=`${pct}% 完了`;
-  document.getElementById('progBar').style.width=pct+'%';
-}
-function next(){ saveNow(false); if(cur<STEPS.length-1){cur++;renderStep();} }
+function next(){ saveNow(false); checkStepComplete(STEPS[cur].no); if(cur<STEPS.length-1){cur++;renderStep();} }
 function prev(){ saveNow(false); if(cur>0){cur--;renderStep();} }
 
 /* ============================================================
@@ -843,7 +917,8 @@ function renderDoc(){
   host.innerHTML=`
     <div class="dochead">
       <div class="t">マーケティング戦略書</div>
-      <div class="s">SHISEI LABO 12STEP METHOD　|　作成日：${d}　|　完了：${totalDone()}/12 STEP</div>
+      <div class="s">SHISEILABO 12STEP METHOD　|　作成日：${d}　|　完了：${totalDone()}/12 STEP</div>
+      <div class="docscore"><span class="g">${gradeFor(scorePct())}</span><span class="sc"><b>完成度スコア ${scorePct()}%</b>（${totalScore()} / ${maxScore()} pt）<br>${encourageMsg(scorePct())}</span></div>
     </div>
     ${PHASES.map(ph=>STEPS.filter(s=>s.phase===ph.key).map(s=>{
       const a=state.answers[s.no]||{};
