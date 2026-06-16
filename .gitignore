@@ -1,0 +1,15 @@
+# 公開不要なソース原本（Keynote）— 重いのでリポジトリには含めない
+*.key
+Icon
+Icon?
+
+# OS
+.DS_Store
+
+# ローカルツール設定
+.claude/
+
+# Cloudflare / 開発
+.dev.vars
+.wrangler/
+node_modules/

@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>シセイラボ｜12STEP マーケティング戦略・戦術立案システム</title>
+<meta name="description" content="ブランド構築から実行まで。12のステップに答えるだけで、自社のマーケティング戦略書が完成する。シセイラボの実践メソッドをWeb化した戦略・戦術立案システム。" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* シセイラボ ブランドカラー（デジタルカタログ準拠） */
+    --navy:#14233A; --navy2:#1d3252; --ink:#14233A; --gold:#D96A2C; --gold2:#e58a4f;
+    --bg:#f5f3ee; --paper:#ffffff; --line:#e4e0d6; --muted:#5f6b7a; --soft:#94a0ad;
+    --accent:#D96A2C; --good:#1f9d6b; --shadow:0 14px 50px rgba(20,35,58,.10);
+    --r:6px; --maxw:1120px;
+    --serif:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;
+    --sans:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.75;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .hidden{display:none!important}
+
+  /* ---------- Top nav ---------- */
+  header.nav{position:sticky;top:0;z-index:50;background:rgba(15,27,61,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08)}
+  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:11px;color:#fff;font-weight:700;letter-spacing:.02em}
+  .brand .logo{width:30px;height:30px;border:2px solid var(--gold);border-radius:7px;display:grid;place-items:center;color:var(--gold);font-family:var(--serif);font-size:16px}
+  .brand small{display:block;font-size:10px;color:var(--soft);font-weight:400;letter-spacing:.18em}
+  .nav nav{display:flex;gap:6px;align-items:center}
+  .nav nav a,.nav nav button{color:#cdd3e1;font-size:14px;padding:8px 14px;border-radius:9px;background:none;border:0;cursor:pointer;font-family:inherit;transition:.2s}
+  .nav nav a:hover,.nav nav button:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .nav nav .cta{background:var(--gold);color:var(--navy);font-weight:700}
+  .nav nav .cta:hover{background:var(--gold2)}
+  .navtoggle{display:none}
+
+  /* ---------- Views ---------- */
+  .view{display:none}
+  .view.active{display:block;animation:fade .4s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ---------- HERO ---------- */
+  .hero{background:radial-gradient(1200px 600px at 80% -10%,rgba(200,162,74,.18),transparent),linear-gradient(160deg,var(--navy),var(--navy2));color:#fff;padding:90px 0 80px;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M0 39h40M39 0v40' stroke='%23ffffff0d' stroke-width='1'/%3E%3C/svg%3E");opacity:.5}
+  .hero .wrap{position:relative;z-index:1}
+  .eyebrow{display:inline-block;color:var(--gold2);letter-spacing:.22em;font-size:12px;border:1px solid rgba(200,162,74,.4);padding:6px 14px;border-radius:30px;margin-bottom:26px}
+  .hero h1{font-family:var(--serif);font-size:clamp(30px,5vw,52px);line-height:1.35;font-weight:600;letter-spacing:.01em}
+  .hero h1 b{color:var(--gold2);font-weight:600}
+  .hero p.lead{margin-top:24px;font-size:clamp(15px,2vw,18px);color:#d3d9e7;max-width:640px}
+  .hero .btns{margin-top:40px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:15px 30px;border-radius:40px;font-weight:700;cursor:pointer;border:0;font-family:inherit;font-size:15px;transition:.2s}
+  .btn.primary{background:var(--gold);color:var(--navy)}
+  .btn.primary:hover{background:var(--gold2);transform:translateY(-2px)}
+  .btn.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.22)}
+  .btn.ghost:hover{background:rgba(255,255,255,.16)}
+  .hero .stats{margin-top:54px;display:flex;gap:46px;flex-wrap:wrap}
+  .hero .stats div{border-left:2px solid var(--gold)}
+  .hero .stats .n{font-family:var(--serif);font-size:34px;color:#fff;padding-left:16px;line-height:1}
+  .hero .stats .l{padding-left:16px;color:var(--soft);font-size:12px;margin-top:6px}
+
+  /* ---------- Section ---------- */
+  section.block{padding:80px 0}
+  .sec-head{text-align:center;max-width:680px;margin:0 auto 54px}
+  .sec-head .tag{color:var(--gold);letter-spacing:.2em;font-size:12px;font-weight:700}
+  .sec-head h2{font-family:var(--serif);font-size:clamp(24px,3.5vw,34px);margin-top:12px;font-weight:600;color:var(--navy)}
+  .sec-head p{margin-top:16px;color:var(--muted)}
+
+  /* problem cards */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:30px}
+  .card h3{font-size:17px;color:var(--navy);margin-bottom:10px;display:flex;gap:10px;align-items:center}
+  .card h3 .dot{width:9px;height:9px;border-radius:50%;background:var(--gold)}
+  .card p{color:var(--muted);font-size:14px}
+
+  /* phases / steps overview */
+  .phases{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .phaserow{display:grid;grid-template-columns:200px 1fr;gap:30px;padding:34px 0;border-bottom:1px dashed var(--line)}
+  .phaserow:last-child{border-bottom:0}
+  .phasemeta .pnum{font-family:var(--serif);font-size:40px;color:var(--gold);line-height:1}
+  .phasemeta .pname{font-weight:700;color:var(--navy);margin-top:8px;font-size:18px}
+  .phasemeta .pdesc{color:var(--muted);font-size:13px;margin-top:8px}
+  .stepcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+  .stepcard{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:16px;cursor:pointer;transition:.2s}
+  .stepcard:hover{border-color:var(--gold);box-shadow:var(--shadow);transform:translateY(-2px)}
+  .stepcard .sc-no{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.08em}
+  .stepcard .sc-t{font-weight:700;color:var(--navy);font-size:14px;margin-top:6px;line-height:1.5}
+  .stepcard .sc-f{margin-top:10px;display:flex;flex-wrap:wrap;gap:5px}
+  .chip{font-size:10px;background:#fff;border:1px solid var(--line);color:var(--soft);padding:3px 8px;border-radius:20px}
+
+  /* how it works */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:fl}
+  .flowstep{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:28px 22px}
+  .flowstep .fn{width:38px;height:38px;border-radius:50%;background:var(--navy);color:var(--gold2);display:grid;place-items:center;font-family:var(--serif);font-size:18px;margin-bottom:16px}
+  .flowstep h4{color:var(--navy);font-size:16px;margin-bottom:8px}
+  .flowstep p{color:var(--muted);font-size:13px}
+
+  /* CTA band */
+  .ctaband{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;border-radius:20px;padding:54px;text-align:center}
+  .ctaband h2{font-family:var(--serif);font-size:clamp(22px,3vw,30px);font-weight:600}
+  .ctaband p{color:#cdd3e1;margin:14px 0 28px}
+
+  /* footer */
+  footer{background:var(--navy);color:#aeb6c9;padding:48px 0;font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;align-items:center}
+  footer a{color:#cdd3e1}footer a:hover{color:#fff}
+
+  /* ============ WIZARD ============ */
+  .toolbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:64px;z-index:40}
+  .toolbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-top:14px;padding-bottom:14px;flex-wrap:wrap}
+  .progress{flex:1;min-width:220px}
+  .progress .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .bar{height:8px;background:#eceae2;border-radius:20px;overflow:hidden}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0;transition:width .4s}
+  .toolbar .acts{display:flex;gap:8px;flex-wrap:wrap}
+  .btn.sm{padding:9px 18px;font-size:13px;border-radius:40px}
+  .btn.outline{background:#fff;border:1px solid var(--line);color:var(--navy)}
+  .btn.outline:hover{border-color:var(--gold)}
+  .btn.dark{background:var(--navy);color:#fff}
+  .btn.dark:hover{background:var(--navy2)}
+
+  .wizlayout{display:grid;grid-template-columns:260px 1fr;gap:34px;padding:36px 0 80px}
+  .stepnav{position:sticky;top:150px;align-self:start;max-height:calc(100vh - 170px);overflow:auto}
+  .stepnav .phgrp{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.1em;margin:18px 0 8px}
+  .stepnav .phgrp:first-child{margin-top:0}
+  .stepnav button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:8px 10px;border-radius:9px;cursor:pointer;font-family:inherit;font-size:13px;color:var(--ink);transition:.15s}
+  .stepnav button:hover{background:#fff}
+  .stepnav button.cur{background:var(--navy);color:#fff}
+  .stepnav button .ix{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:11px;flex:none;color:var(--muted)}
+  .stepnav button.cur .ix{border-color:var(--gold);color:var(--gold2)}
+  .stepnav button.done .ix{background:var(--good);border-color:var(--good);color:#fff}
+
+  .stepmain{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:40px;box-shadow:var(--shadow);min-height:60vh}
+  .stepmain .badge{display:inline-block;font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.12em}
+  .stepmain h2{font-family:var(--serif);font-size:26px;color:var(--navy);margin:8px 0 4px;font-weight:600}
+  .stepmain .purpose{color:var(--muted);font-size:14px;background:var(--bg);border-left:3px solid var(--gold);padding:14px 18px;border-radius:0 10px 10px 0;margin:18px 0 8px}
+  .fwbar{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 28px}
+  .fwbar .chip{background:#fbf7ec;border-color:#ecdcb4;color:#9a7a2a;font-size:11px}
+  .qblock{margin-bottom:26px}
+  .qblock label{display:block;font-weight:700;color:var(--navy);font-size:15px;margin-bottom:4px}
+  .qblock .hint{color:var(--soft);font-size:12.5px;margin-bottom:10px}
+  .qblock textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:14px;font-family:inherit;font-size:14px;line-height:1.7;resize:vertical;min-height:84px;background:#fcfcfa;transition:.2s}
+  .qblock textarea:focus{outline:0;border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(200,162,74,.13)}
+  .outputnote{margin-top:6px;padding:14px 18px;border:1px dashed var(--line);border-radius:11px;font-size:13px;color:var(--muted);background:var(--bg)}
+  .outputnote b{color:var(--navy)}
+  .stepfoot{display:flex;justify-content:space-between;margin-top:34px;padding-top:24px;border-top:1px solid var(--line)}
+
+  /* advisor comment shown in wizard (read mode) */
+  .advisorbox{margin-top:12px;border:1px solid #cfe0d4;background:#f3faf5;border-radius:11px;padding:14px 16px}
+  .advisorbox .h{font-size:12px;font-weight:700;color:var(--good);display:flex;align-items:center;gap:7px;margin-bottom:6px}
+  .advisorbox p{font-size:13.5px;color:#24503b;white-space:pre-wrap}
+
+  /* ============ STRATEGY DOC (output) ============ */
+  .doc{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:48px;box-shadow:var(--shadow);margin:36px 0 80px}
+  .doc .dochead{text-align:center;border-bottom:2px solid var(--navy);padding-bottom:26px;margin-bottom:30px}
+  .doc .dochead .t{font-family:var(--serif);font-size:28px;color:var(--navy)}
+  .doc .dochead .s{color:var(--muted);font-size:13px;margin-top:8px}
+  .docstep{margin-bottom:30px;padding-bottom:24px;border-bottom:1px dashed var(--line)}
+  .docstep h3{font-size:17px;color:var(--navy);display:flex;gap:10px;align-items:baseline}
+  .docstep h3 .no{color:var(--gold);font-family:var(--serif);font-size:15px}
+  .docqa{margin:14px 0 0 0}
+  .docqa .q{font-size:13px;font-weight:700;color:var(--ink);margin-top:14px}
+  .docqa .a{font-size:14px;color:#333;white-space:pre-wrap;background:var(--bg);border-radius:8px;padding:10px 14px;margin-top:5px}
+  .docqa .a.empty{color:var(--soft);font-style:italic;background:none;padding:6px 0}
+
+  /* ============ ADVISOR ============ */
+  .advgrid{padding:36px 0 80px}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:30px;margin-bottom:24px}
+  .panel h3{color:var(--navy);font-family:var(--serif);font-size:20px;margin-bottom:14px}
+  .panel textarea.code{width:100%;min-height:120px;font-family:ui-monospace,Menlo,monospace;font-size:12px;border:1px solid var(--line);border-radius:10px;padding:12px;background:#fbfbf8}
+  .adv-step{border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+  .adv-step .ah{font-weight:700;color:var(--navy);margin-bottom:10px}
+  .adv-step .ah .no{color:var(--gold);font-family:var(--serif);margin-right:8px}
+  .adv-qa{font-size:13px;margin:8px 0}
+  .adv-qa .q{color:var(--soft);font-weight:700}
+  .adv-qa .a{color:#333;white-space:pre-wrap;margin-top:2px}
+  .adv-step textarea.cm{width:100%;min-height:70px;border:1px solid #cfe0d4;border-radius:10px;padding:10px;font-family:inherit;font-size:13px;background:#f7fbf8;margin-top:8px}
+
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:13px 24px;border-radius:30px;font-size:14px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.3s;z-index:99}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* glossary modal */
+  .modal{position:fixed;inset:0;background:rgba(15,27,61,.55);display:none;place-items:center;z-index:90;padding:24px}
+  .modal.show{display:grid}
+  .modal .box{background:#fff;max-width:720px;width:100%;max-height:84vh;overflow:auto;border-radius:18px;padding:36px}
+  .modal h3{font-family:var(--serif);color:var(--navy);font-size:24px;margin-bottom:6px}
+  .modal .gterm{border-bottom:1px solid var(--line);padding:14px 0}
+  .modal .gterm b{color:var(--navy)}
+  .modal .gterm p{font-size:13.5px;color:var(--muted);margin-top:4px}
+  .modal .x{float:right;cursor:pointer;border:0;background:var(--bg);width:34px;height:34px;border-radius:50%;font-size:18px}
+
+  @media(max-width:880px){
+    .grid3,.flow{grid-template-columns:1fr}
+    .phaserow{grid-template-columns:1fr;gap:16px}
+    .wizlayout{grid-template-columns:1fr}
+    .stepnav{position:static;max-height:none;display:none}
+    .stepnav.open{display:block}
+    .nav nav{display:none}
+    .stepmain,.doc,.panel{padding:24px}
+    .hero{padding:64px 0 54px}
+  }
+  @media print{
+    header.nav,.toolbar,.stepfoot,footer,.btn,.navtoggle{display:none!important}
+    .doc{border:0;box-shadow:none;padding:0}
+    body{background:#fff}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#" onclick="go('home');return false;">
+      <span class="logo">志</span>
+      <span>SHISEILABO<small>MARKETING STRATEGY SYSTEM</small></span>
+    </a>
+    <nav>
+      <a href="#" onclick="go('home');return false;">メソッド</a>
+      <button onclick="openGlossary()">用語集</button>
+      <button onclick="go('advisor')">アドバイザー</button>
+      <button class="cta" onclick="go('wizard')">無料で戦略立案を始める →</button>
+    </nav>
+    <button class="btn ghost sm navtoggle" onclick="go('wizard')">始める</button>
+  </div>
+</header>
+
+<!-- ===================== HOME / LP ===================== -->
+<main id="view-home" class="view active">
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow">想像以上を、創造で。 ／ SHISEILABO METHOD</span>
+      <h1>12の問いに答えるだけで、<br><b>自社のブランド戦略書</b>が完成する。</h1>
+      <p class="lead">「何から手をつければいいか分からない」を終わらせる。シセイラボが実務で磨いた12STEPの実践メソッドを、誰でも順番に進められる立案システムにしました。現状分析から実行計画まで、一本の論理で繋ぎます。</p>
+      <div class="btns">
+        <button class="btn primary" onclick="go('wizard')">戦略立案を始める（無料）</button>
+        <button class="btn ghost" onclick="document.getElementById('method').scrollIntoView()">メソッドを見る</button>
+      </div>
+      <div class="stats">
+        <div><div class="n">5</div><div class="l">PHASES / フェーズ</div></div>
+        <div><div class="n">12</div><div class="l">STEPS / ステップ</div></div>
+        <div><div class="n">1</div><div class="l">一貫した論理</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- problems -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="tag">SUCH PROBLEMS?</div>
+        <h2>マーケティング・ブランディングの<br>「つまずき」に、順序で答える。</h2>
+        <p>多くの企業は戦術（HOW）から始めてしまいます。本メソッドは「誰に・なぜ・何を」を先に固め、打率の高い戦術へ落とし込みます。</p>
+      </div>
+      <div class="grid3">
+        <div class="card"><h3><span class="dot"></span>戦略がなく施策が場当たり的</h3><p>SNSも広告もやっているのに成果が積み上がらない。土台となる戦略エクイティが定義されていないことが原因です。</p></div>
+        <div class="card"><h3><span class="dot"></span>「自社の強み」を言語化できない</h3><p>USP（選ばれる理由）とRTB（その根拠）が曖昧なまま。競合との差別化点を構造的に導きます。</p></div>
+        <div class="card"><h3><span class="dot"></span>誰に売るかが定まっていない</h3><p>ターゲットが「みんな」になっている。STPと独自の顧客セグメントで、攻める相手を明確にします。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- method overview -->
+  <section class="block phases" id="method">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="tag">THE METHOD</div>
+        <h2>5フェーズ・12ステップの全体像</h2>
+        <p>各ステップの出力が、次のステップの入力になる「積み上げ式」。クリックすると、そのステップから立案を始められます。</p>
+      </div>
+      <div id="phaseOverview"></div>
+    </div>
+  </section>
+
+  <!-- how it works -->
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="tag">HOW IT WORKS</div>
+        <h2>使い方は、かんたん4ステップ</h2>
+      </div>
+      <div class="flow">
+        <div class="flowstep"><div class="fn">1</div><h4>問いに答える</h4><p>12STEPの質問に、自社の状況を入力。回答はブラウザに自動保存されます。</p></div>
+        <div class="flowstep"><div class="fn">2</div><h4>戦略書ができる</h4><p>入力内容が1枚の戦略書として自動で整います。印刷・PDF保存も可能。</p></div>
+        <div class="flowstep"><div class="fn">3</div><h4>共有コードを出力</h4><p>「共有コード」を発行してシセイラボに送付。アドバイスを依頼できます。</p></div>
+        <div class="flowstep"><div class="fn">4</div><h4>専門家の助言を受け取る</h4><p>各STEPへのコメント付きコードが返却され、改善点がその場で分かります。</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- cta -->
+  <section class="block">
+    <div class="wrap">
+      <div class="ctaband">
+        <h2>あなたの会社の戦略書を、今日つくり始める。</h2>
+        <p>登録不要・無料。途中保存できるので、少しずつ進められます。</p>
+        <button class="btn primary" onclick="go('wizard')">12STEP立案を始める →</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div>© SHISEI LABO ・ 12STEP Marketing Strategy System</div>
+      <div><a href="#" onclick="openGlossary();return false;">用語集</a>　/　<a href="#" onclick="go('advisor');return false;">アドバイザー管理画面</a></div>
+    </div>
+  </footer>
+</main>
+
+<!-- ===================== WIZARD ===================== -->
+<main id="view-wizard" class="view">
+  <div class="toolbar">
+    <div class="wrap">
+      <div class="progress">
+        <div class="meta"><span id="progLabel">STEP 1 / 12</span><span id="progPct">0% 完了</span></div>
+        <div class="bar"><i id="progBar"></i></div>
+      </div>
+      <div class="acts">
+        <button class="btn outline sm navtoggle" onclick="document.querySelector('.stepnav').classList.toggle('open')">STEP一覧</button>
+        <button class="btn outline sm" onclick="go('doc')">📄 戦略書を見る</button>
+        <button class="btn outline sm" onclick="checkAdvice()">💬 アドバイス確認</button>
+        <button class="btn dark sm" onclick="openSubmitModal()">☁️ シセイラボに送信</button>
+      </div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="wizlayout">
+      <aside class="stepnav" id="stepNav"></aside>
+      <section class="stepmain" id="stepMain"></section>
+    </div>
+  </div>
+</main>
+
+<!-- ===================== STRATEGY DOC ===================== -->
+<main id="view-doc" class="view">
+  <div class="toolbar">
+    <div class="wrap">
+      <div style="font-weight:700;color:var(--navy)">📄 マーケティング戦略書</div>
+      <div class="acts">
+        <button class="btn outline sm" onclick="go('wizard')">← 編集に戻る</button>
+        <button class="btn outline sm" onclick="window.print()">🖨 印刷 / PDF保存</button>
+        <button class="btn outline sm" onclick="exportShare()">🔗 共有コード</button>
+        <button class="btn dark sm" onclick="openSubmitModal()">☁️ シセイラボに送信</button>
+      </div>
+    </div>
+  </div>
+  <div class="wrap"><div class="doc" id="docBody"></div></div>
+</main>
+
+<!-- ===================== ADVISOR ===================== -->
+<main id="view-advisor" class="view">
+  <div class="toolbar">
+    <div class="wrap">
+      <div style="font-weight:700;color:var(--navy)">🧭 アドバイザー管理画面</div>
+      <div class="acts"><button class="btn outline sm" onclick="go('home')">← トップへ</button></div>
+    </div>
+  </div>
+  <div class="wrap advgrid">
+    <!-- クラウド：送信された戦略書の一覧 -->
+    <div class="panel">
+      <h3>① 送信された戦略書を確認（クラウド）</h3>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">管理者パスワードを入力すると、企業がシセイラボに送信した戦略書の一覧が表示されます。選択すると回答が読み込まれ、アドバイスはクラウドに保存・即時返却されます。</p>
+      <div id="advLogin" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input type="password" id="advPass" placeholder="管理者パスワード" style="flex:1;min-width:200px;border:1px solid var(--line);border-radius:10px;padding:11px 14px;font-family:inherit;font-size:14px" />
+        <button class="btn dark sm" onclick="advCloudLogin()">ログインして一覧表示</button>
+      </div>
+      <div id="advListWrap" class="hidden" style="margin-top:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:12px;color:var(--muted)" id="advListMeta"></span>
+          <button class="btn outline sm" onclick="advCloudList()">↻ 更新</button>
+        </div>
+        <div id="advList"></div>
+      </div>
+    </div>
+
+    <!-- 共有コード（フォールバック） -->
+    <details class="panel" style="padding:0;border:1px solid var(--line)">
+      <summary style="cursor:pointer;padding:22px 30px;font-family:var(--serif);font-size:18px;color:var(--navy)">＋ 共有コードで読み込む（クラウド未設定時のフォールバック）</summary>
+      <div style="padding:0 30px 26px">
+        <p style="color:var(--muted);font-size:13px;margin-bottom:12px">企業がメール等で送ってきた共有コードを貼り付けて読み込みます。コメント付きコードを書き出して返送します。</p>
+        <textarea class="code" id="advInput" placeholder="ここに共有コードを貼り付け…"></textarea>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn dark sm" onclick="advLoad()">読み込む</button>
+          <button class="btn outline sm" onclick="advLoadMine()">自分の入力を読み込む</button>
+        </div>
+      </div>
+    </details>
+    <div id="advWorkspace" class="hidden">
+      <div class="panel">
+        <h3>② 各STEPにアドバイスを記入</h3>
+        <div id="advMeta" style="font-size:13px;color:var(--muted);margin-bottom:14px"></div>
+        <div id="advSteps"></div>
+      </div>
+      <!-- クラウド保存（クラウドモードのときに表示） -->
+      <div class="panel hidden" id="advCloudSave">
+        <h3>③ クラウドに保存して企業へ返却</h3>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:12px">保存すると企業側は「アドバイス確認」ボタンでコメントを受け取れます。</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <label style="font-size:13px;color:var(--muted)">ステータス：
+            <select id="advStatus" style="border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-family:inherit">
+              <option value="reviewing">確認中</option>
+              <option value="done">完了</option>
+              <option value="new">未対応</option>
+            </select>
+          </label>
+          <button class="btn dark sm" onclick="advCloudSave()">☁️ クラウドに保存</button>
+        </div>
+      </div>
+      <!-- コード返却（フォールバックモードのときに表示） -->
+      <div class="panel" id="advCodeSave">
+        <h3>③ コメント付きコードを書き出して返却</h3>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:12px">下のコードを企業へ返送してください。企業側はウィザード/戦略書でコメントを確認できます。</p>
+        <textarea class="code" id="advOutput" readonly></textarea>
+        <div style="margin-top:12px"><button class="btn dark sm" onclick="advExport()">📋 コメント付きコードをコピー</button></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 送信モーダル（企業 → シセイラボ） -->
+<div class="modal" id="submitModal">
+  <div class="box" style="max-width:520px">
+    <button class="x" onclick="closeSubmitModal()">×</button>
+    <h3>シセイラボに送信</h3>
+    <p style="color:var(--muted);font-size:13px;margin-top:4px">入力した戦略書をシセイラボへ送信し、専門家のアドバイスを依頼します。送信内容はシセイラボが保存・確認します。</p>
+    <div style="margin-top:18px">
+      <label style="font-weight:700;font-size:14px;color:var(--navy)">会社名 <span style="color:#c00">*</span></label>
+      <input id="smCompany" type="text" placeholder="株式会社○○" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin-top:6px;font-family:inherit;font-size:14px" />
+    </div>
+    <div style="margin-top:14px">
+      <label style="font-weight:700;font-size:14px;color:var(--navy)">連絡先メール <span style="color:#c00">*</span></label>
+      <input id="smEmail" type="email" placeholder="you@example.com" style="width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 14px;margin-top:6px;font-family:inherit;font-size:14px" />
+    </div>
+    <div id="smStatus" style="font-size:13px;margin-top:14px;color:var(--muted)"></div>
+    <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn outline sm" onclick="closeSubmitModal()">キャンセル</button>
+      <button class="btn primary sm" id="smBtn" onclick="cloudSubmit()">送信する</button>
+    </div>
+  </div>
+</div>
+
+<!-- glossary modal -->
+<div class="modal" id="glossary">
+  <div class="box">
+    <button class="x" onclick="closeGlossary()">×</button>
+    <h3>用語集</h3>
+    <p style="color:var(--muted);font-size:13px">シセイラボ・メソッドの中核概念</p>
+    <div id="glossaryBody" style="margin-top:14px"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   12STEP メソッド・データ定義（シセイラボ実践メソッドより構造化）
+   ============================================================ */
+const PHASES = [
+  {key:'analysis', no:'PHASE 01', name:'現状分析', desc:'市場と自社の現在地を正しく把握する'},
+  {key:'strategy', no:'PHASE 02', name:'戦略',     desc:'誰に・なぜ・何の価値を届けるかを定義する'},
+  {key:'design',   no:'PHASE 03', name:'設計',     desc:'ブランドとプロダクトの全体像をつくる'},
+  {key:'tactics',  no:'PHASE 04', name:'戦術',     desc:'認知・販売・接点を具体的に設計する'},
+  {key:'execution',no:'PHASE 05', name:'実行',     desc:'物語と計画で社内外を動かす'},
+];
+
+const STEPS = [
+  { phase:'analysis', no:1, title:'ブランドの現在地と市場の定義',
+    purpose:'自社ブランドの「今の立ち位置」を把握し、市場の範囲と競争環境を明確にして、後続の戦略設計の基盤をつくる。',
+    frameworks:['SWOT分析','ポジショニングマップ','ブランド健康診断','3C'],
+    questions:[
+      {id:'q1',label:'どの市場で戦うのか？',hint:'対象市場の定義。隣接市場・新規市場への拡張余地も含めて。'},
+      {id:'q2',label:'市場規模・成長性・主要プレイヤーは？',hint:'市場の大きさ、成長トレンド、主要な企業を整理。'},
+      {id:'q3',label:'顧客はブランドをどう認知・評価しているか？',hint:'現状の認知度・イメージ・感じている価値。'},
+      {id:'q4',label:'自社の強み・弱みは？（SWOT的に）',hint:'強み/弱み/機会/脅威。"ブランドの健康診断"を行う。'},
+      {id:'q5',label:'顧客がブランドを選ぶ基準と、自社が勝てる領域は？',hint:'どこで・なぜ選ばれるか。勝負できる土俵はどこか。'},
+    ],
+    output:'市場の枠組み定義／ブランドの現状把握（競合・顧客視点でのポジション）' },
+
+  { phase:'analysis', no:2, title:'競合他社の特定・ベンチマーク企業の選定',
+    purpose:'直接・間接に競合する企業を把握し、その中から学ぶべき対象（ベンチマーク）を選定。差別化点と追随すべき成功要因を抽出する。',
+    frameworks:['直接競合/間接競合','競合分析フレーム','SWOT','ベンチマーキング'],
+    questions:[
+      {id:'q1',label:'直接競合は誰か？',hint:'同じターゲット・同類商品で比較検討される企業。'},
+      {id:'q2',label:'間接競合は誰か？',hint:'代替サービス、異業種からの新規参入など。'},
+      {id:'q3',label:'各社を比較軸でどう評価する？',hint:'価格・機能・ブランド力・流通チャネル・広告手法など。'},
+      {id:'q4',label:'ベンチマーク企業（追随すべき成功モデル）はどこか？',hint:'学ぶ対象と、差別化の対象を分けて。'},
+      {id:'q5',label:'異業種で参考にすべき成功事例は？',hint:'顧客体験、DX戦略など他業界の好例。'},
+    ],
+    output:'競合の洗い出し／競合分析／ベンチマーク企業の選定' },
+
+  { phase:'strategy', no:3, title:'価値の創造・戦略エクイティ定義',
+    purpose:'ブランドが『誰に・なぜ・どんな価値を提供するか』を定義し、選択確率を決める最重要要素「戦略エクイティ」を特定する。',
+    frameworks:['ブランド・エクイティ','戦略エクイティ','ベネフィット/メリット','機能的価値/情緒的価値','POD / High Ground'],
+    questions:[
+      {id:'q1',label:'顧客にとっての機能的価値は？',hint:'利便性・性能など客観的なベネフィット。'},
+      {id:'q2',label:'顧客にとっての情緒的価値は？',hint:'安心感・共感・憧れなど感情的なベネフィット。'},
+      {id:'q3',label:'消費者が商品を買う「本当の理由（便益）」は？',hint:'無意識の欲求・インサイトも含む根源的な便益。'},
+      {id:'q4',label:'戦略エクイティ（選ばれる確率を決める核）は何か？',hint:'ターゲットに選ばれる強い理由になっているイメージ。'},
+      {id:'q5',label:'自社だけのポジション(High Ground)／選ばれる条件(POD)は？',hint:'自社だけが立てる独自の場所と条件。'},
+      {id:'q6',label:'中長期で強化・蓄積すべき価値の方向性は？',hint:'体験強化・社会的価値・DXなど資産化の道筋。'},
+    ],
+    output:'提供価値の明確化／戦略エクイティ要素の定義' },
+
+  { phase:'strategy', no:4, title:'ターゲット・セグメント定義',
+    purpose:'市場を意味あるグループに分け、最も価値を提供できる顧客層（戦略ターゲット／コアターゲット）を特定する。',
+    frameworks:['STP','セグメンテーション(デモ/ジオ/サイコ)','ブランドとの関係性9セグメント','ST/CT','ペルソナ'],
+    questions:[
+      {id:'q1',label:'なぜ人によって選択が分かれるのか（セグメントの切り口）？',hint:'何で分けると意味のある違いが出るか。'},
+      {id:'q2',label:'顧客が解消したい痛み（ペインポイント）は？',hint:'各セグメントが抱える課題。'},
+      {id:'q3',label:'戦略ターゲット（ST）＝攻略する母集団は誰か？',hint:'例：高血圧の人とその予備軍。'},
+      {id:'q4',label:'コアターゲット（CT）＝中核層は誰か？',hint:'STの中で最優先で狙う中核。'},
+      {id:'q5',label:'ブランドとの関係性での分類は？',hint:'非認知/認知未購買/購買経験/ロイヤル/離反 など。'},
+      {id:'q6',label:'そのターゲット特有のニーズ・価値観・行動は？',hint:'ペルソナとして具体化。'},
+    ],
+    output:'顧客セグメント定義／戦略ターゲット(ST)・コアターゲット(CT)' },
+
+  { phase:'strategy', no:5, title:'組織設計・マーケティングコンセプト定義',
+    purpose:'戦略エクイティから「どう売るか・市場でどう勝つか」を示すマーケティング・コンセプトを定義し、実行可能な組織を設計する。',
+    frameworks:['マーケティング・コンセプト(Why/What/How)','組織設計・役割定義'],
+    questions:[
+      {id:'q1',label:'存在意義(Why)・提供価値(What)・提供方法(How)を短く言うと？',hint:'価値を顧客に伝える具体的な流れ。'},
+      {id:'q2',label:'推進チームの構造・責任範囲・意思決定プロセスは？',hint:'誰がどう動かすか。'},
+      {id:'q3',label:'組織はこのコンセプトを実行できるか？',hint:'デジタル/顧客接点重視など、必要な体制。'},
+      {id:'q4',label:'社員・パートナー全員が行動に落とし込めるか？',hint:'現場まで浸透する形になっているか。'},
+    ],
+    output:'マーケティングコンセプト／組織設計と役割定義' },
+
+  { phase:'strategy', no:6, title:'目標定義（定量目標・定性目標）',
+    purpose:'組織と定義から、追うべき目標数値と状態目標を定義する。',
+    frameworks:['SMART','KGI/KPIツリー','OKR','スコアカード','LTV'],
+    questions:[
+      {id:'q1',label:'このプロジェクト／組織の理想の目標は？',hint:'目指す到達点。'},
+      {id:'q2',label:'定量目標（KGI/KPI）は？',hint:'売上・利益・シェア・顧客獲得数・リード数など。'},
+      {id:'q3',label:'定性目標は？',hint:'ブランドイメージ・顧客満足度・社員エンゲージメントなど。'},
+      {id:'q4',label:'定量と定性は矛盾しないか？',hint:'短期売上追求がブランド信頼を損なわないか。'},
+    ],
+    output:'定量目標／定性目標（整合性の確認）' },
+
+  { phase:'design', no:7, title:'ブランド全体像・プロダクト開発定義',
+    purpose:'戦略エクイティを伝えるために、どんなプロダクト／ブランド全体像を創造すべきかを定義する。',
+    frameworks:['MVV(ビジョン/ミッション/バリュー)','ブランドアイデンティティ','開発ロードマップ'],
+    questions:[
+      {id:'q1',label:'ブランドのビジョン・ミッション・バリューは？',hint:'目指す未来・存在意義・価値観。'},
+      {id:'q2',label:'視覚要素と言語要素は？',hint:'ロゴ・カラー・デザイン／トーン&マナー・スローガン。'},
+      {id:'q3',label:'顧客体験・機能要件・価格帯・流通をどう価値観に沿わせるか？',hint:'プロダクトの方向性。'},
+      {id:'q4',label:'約束する価値と、実際に提供する価値は一致しているか？',hint:'ブランドとプロダクトの接続確認。'},
+    ],
+    output:'ブランド全体像／プロダクト開発の方向性' },
+
+  { phase:'design', no:8, title:'ブランドポジショニング・USP/RTBの明確化',
+    purpose:'市場で占める独自の立ち位置を定義し、選ばれる理由(USP)とその根拠(RTB)を明確にする。（実施後にSNSプロモーション可能）',
+    frameworks:['ポジショニングマップ','USP','RTB','ブランド認知(助成/非助成)'],
+    questions:[
+      {id:'q1',label:'市場の中で自社ブランドはどのポジションにいるか？',hint:'顧客の心の中での位置づけ。'},
+      {id:'q2',label:'他社でなく自社を選ぶ理由（USP）を一言で？',hint:'独自の売り。'},
+      {id:'q3',label:'差別化要因に情緒的・象徴的要素は含まれるか？',hint:'機能だけでない選ばれ方。'},
+      {id:'q4',label:'USPを裏付ける証拠・根拠（RTB）は？',hint:'実績データ・専門性・顧客事例・受賞歴など。'},
+      {id:'q5',label:'ポジショニングマップの軸と自社の立ち位置は？',hint:'例：価格軸 × 価値軸。'},
+    ],
+    output:'ポジショニングステートメント（ポジショニング＋USP＋RTB）' },
+
+  { phase:'tactics', no:9, title:'ブランド販売戦略・アクセス設計・嗜好定義',
+    purpose:'「知ってもらう」から「実際に選ばれる」まで導くため、販売チャネル・顧客アクセス・顧客嗜好を統合的に設計する。',
+    frameworks:['好意度要素','意思決定の優先軸','カスタマージャーニー','認知率/配荷率/選択的好意度'],
+    questions:[
+      {id:'q1',label:'顧客が購買時に重視する好意度要素は？',hint:'価格・機能・デザイン・安心感・社会的価値など。'},
+      {id:'q2',label:'ペルソナごとの「意思決定の優先軸」は？',hint:'誰が何を最重視して決めるか。'},
+      {id:'q3',label:'顧客がブランドにアクセスする導線は？',hint:'検索→LP→購入、SNS→店舗来訪 など。'},
+      {id:'q4',label:'オンライン／オフラインの販売チャネルと体験は？',hint:'各チャネルでの提供体験。'},
+      {id:'q5',label:'購入・利用までの摩擦をどう減らすか？',hint:'抵抗要素の除去。'},
+    ],
+    output:'販売戦略／アクセス設計／顧客嗜好の定義' },
+
+  { phase:'tactics', no:10, title:'ブランド認知戦略・コミュニケーション設計',
+    purpose:'ターゲットにブランドを認知させ、正しいイメージで理解してもらう戦略を設計。「存在を知る」から「好意・信頼」までの流れを描く。',
+    frameworks:['3つのファネル(パーチェス/インフルエンス/アフター)','コアメッセージ','ログライン','SEO/LLMO'],
+    questions:[
+      {id:'q1',label:'ブランドへのアクセスを拒む抵抗要素は？',hint:'認知抵抗・顕在/潜在の障壁。'},
+      {id:'q2',label:'認知をどう獲得するか？',hint:'TOFU（認知獲得）の打ち手。'},
+      {id:'q3',label:'ターゲット別の情報接触行動と最適チャネルは？',hint:'広告・SNS・イベント・PRなど。'},
+      {id:'q4',label:'一貫して伝えるコアメッセージは？',hint:'タッチポイント別の表現も。'},
+      {id:'q5',label:'自社ブランドの「ログライン」は？',hint:'消費者を主語に、抵抗を越えて欲求を満たす物語を一文で。'},
+    ],
+    output:'認知獲得戦略／コミュニケーション設計／ログライン' },
+
+  { phase:'tactics', no:11, title:'ブランドコンセプト・ブランド・エクイティ展開',
+    purpose:'顧客視点のブランドコンセプト（なぜ存在し、どう記憶されるか）を定義し、エクイティを各施策に一貫展開する。',
+    frameworks:['ブランドコンセプト(Why/What/How一文)','エクイティ要素(認知/好意/信頼/ロイヤルティ)','効果測定'],
+    questions:[
+      {id:'q1',label:'ブランドの存在意義・提供価値・実現手段を一文に凝縮すると？',hint:'Why/What/How を一文で。'},
+      {id:'q2',label:'そのコンセプトは「顧客目線/ならでは/スケール/シンプル」を満たすか？',hint:'機能するコンセプトの4条件。'},
+      {id:'q3',label:'各エクイティを商品・広告・店舗・アフターにどう落とすか？',hint:'認知・好意・信頼・ロイヤルティの展開。'},
+      {id:'q4',label:'認知度・イメージの変化をどう測定し改善するか？',hint:'調査・SNS分析・売上で改善サイクル。'},
+    ],
+    output:'ブランドコンセプト／エクイティ展開計画／効果測定' },
+
+  { phase:'execution', no:12, title:'ストーリーテリング・ミッション策定・PR実行計画',
+    purpose:'存在意義を「物語」として伝え共感を得る。核をミッションステートメントに明文化し、PR・コミュニケーションを実行計画に落とす。',
+    frameworks:['ストーリーテリング','ミッションステートメント','PR設計','アーンドメディア戦術'],
+    questions:[
+      {id:'q1',label:'ブランドの起点・挑戦・未来像は？',hint:'創業の想い／乗り越える課題／実現したい世界。'},
+      {id:'q2',label:'ミッションステートメントを一文にすると？',hint:'「私たちは誰のために、何を、なぜ実現するのか」。'},
+      {id:'q3',label:'どのストーリーラインが共感されるか？',hint:'ヒーローズジャーニー型／共創型 など。'},
+      {id:'q4',label:'社内・社外でどう体現・浸透させるか？',hint:'研修/ブランドブック／Web/広告/イベント。'},
+      {id:'q5',label:'どのPR・アーンド戦術を使うか？',hint:'PR・インフルエンサー・UGC・紹介・コミュニティ。'},
+    ],
+    output:'ストーリー設計／ミッションステートメント／PR実行計画' },
+];
+
+const GLOSSARY = [
+  ['ブランド・エクイティ','ブランドの「太い1本の幹」。物理的に存在せず、消費者の頭の中にある概念。商品・サービス・プロモーションは全てこれを届けるための"手法"にすぎない。'],
+  ['戦略エクイティ','ブランド・エクイティの中で、消費者がブランドを選択する確率を決める最重要要素。ターゲットに選ばれる強い理由になっているイメージ（例：ディズニー＝幸福感）。'],
+  ['ベネフィット（便益）','消費者が商品を買う「本当の理由」＝根源的な便益。戦略エクイティとほぼ同義。製品の客観的特徴である"メリット"とは区別する。'],
+  ['USP','Unique Selling Proposition。「他社ではなく当社を選ぶ理由」を一言で表したもの。機能だけでなく情緒的・象徴的差別化も含む。'],
+  ['RTB','Reason to Believe。USPを裏付ける証拠・根拠（実績データ・専門性・顧客事例・受賞歴）。顧客が「本当にそうだ」と納得できる証拠。'],
+  ['ログライン','消費者を主語に、抵抗・障壁・リスクを乗り越えて欲求・ニーズを満たす自社ブランドの物語を一文で表したもの。'],
+  ['MVV','ブランドのMission（存在意義）・Vision（目指す未来）・Value（価値観）。ブランド全体像定義の核。'],
+  ['3つのファネル','①パーチェス＝認知〜購買の新規獲得 ②インフルエンス＝継続・ファン化と共有・紹介 ③アフター＝リテンション・アンバサダー化。'],
+  ['ST / CT','戦略ターゲット(ST)＝攻略する母集団／コアターゲット(CT)＝その中核層。'],
+  ['認知率・配荷率・選択的好意度','ブランドを支える3指標。認知率＝知られている割合、配荷率＝買いやすさ、選択的好意度＝優先的な好み（質的・天井なし）。'],
+];
+
+/* ============================================================
+   State
+   ============================================================ */
+const LS_KEY='shiseilabo_strategy_v1';
+let state = load();
+let cur = 0;
+
+function load(){
+  try{ const d=JSON.parse(localStorage.getItem(LS_KEY)); return d&&d.answers?d:{answers:{},comments:{},updated:null}; }
+  catch(e){ return {answers:{},comments:{},updated:null}; }
+}
+function saveNow(notify){
+  state.updated=new Date().toISOString();
+  localStorage.setItem(LS_KEY,JSON.stringify(state));
+  if(notify) toast('保存しました');
+}
+function ans(stepNo,qid){ return (state.answers[stepNo]&&state.answers[stepNo][qid])||''; }
+function setAns(stepNo,qid,val){
+  state.answers[stepNo]=state.answers[stepNo]||{};
+  state.answers[stepNo][qid]=val;
+}
+function stepDone(stepNo){
+  const a=state.answers[stepNo]; if(!a) return false;
+  return Object.values(a).some(v=>v&&v.trim());
+}
+function totalDone(){ return STEPS.filter(s=>stepDone(s.no)).length; }
+
+/* ============================================================
+   Router
+   ============================================================ */
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  window.scrollTo(0,0);
+  if(view==='wizard') renderStep();
+  if(view==='doc') renderDoc();
+  if(view==='home') renderOverview();
+}
+
+/* ============================================================
+   Home overview
+   ============================================================ */
+function renderOverview(){
+  const host=document.getElementById('phaseOverview');
+  host.innerHTML = PHASES.map(ph=>{
+    const steps=STEPS.filter(s=>s.phase===ph.key);
+    return `<div class="phaserow">
+      <div class="phasemeta">
+        <div class="pnum">${ph.no.replace('PHASE ','')}</div>
+        <div class="pname">${ph.name}</div>
+        <div class="pdesc">${ph.desc}</div>
+      </div>
+      <div class="stepcards">
+        ${steps.map(s=>`<div class="stepcard" onclick="cur=${s.no-1};go('wizard')">
+          <div class="sc-no">STEP ${s.no}</div>
+          <div class="sc-t">${s.title}</div>
+          <div class="sc-f">${s.frameworks.slice(0,3).map(f=>`<span class="chip">${f}</span>`).join('')}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   Wizard
+   ============================================================ */
+function renderNav(){
+  const host=document.getElementById('stepNav');
+  let html='';
+  PHASES.forEach(ph=>{
+    html+=`<div class="phgrp">${ph.name}</div>`;
+    STEPS.filter(s=>s.phase===ph.key).forEach(s=>{
+      const i=s.no-1;
+      html+=`<button class="${i===cur?'cur':''} ${stepDone(s.no)?'done':''}" onclick="cur=${i};renderStep()">
+        <span class="ix">${stepDone(s.no)?'✓':s.no}</span><span>${s.title}</span></button>`;
+    });
+  });
+  host.innerHTML=html;
+}
+
+function renderStep(){
+  const s=STEPS[cur];
+  const ph=PHASES.find(p=>p.key===s.phase);
+  const main=document.getElementById('stepMain');
+  const comment=(state.comments&&state.comments[s.no])||'';
+  main.innerHTML=`
+    <div class="badge">${ph.no}・${ph.name}　|　STEP ${s.no} / 12</div>
+    <h2>${s.title}</h2>
+    <div class="purpose">🎯 ${s.purpose}</div>
+    <div class="fwbar">${s.frameworks.map(f=>`<span class="chip">#${f}</span>`).join('')}</div>
+    ${comment?`<div class="advisorbox"><div class="h">🧭 シセイラボからのアドバイス</div><p>${esc(comment)}</p></div>`:''}
+    ${s.questions.map(q=>`
+      <div class="qblock">
+        <label>${q.label}</label>
+        <div class="hint">${q.hint}</div>
+        <textarea data-step="${s.no}" data-q="${q.id}" placeholder="ここに自社の状況を入力…">${esc(ans(s.no,q.id))}</textarea>
+      </div>`).join('')}
+    <div class="outputnote">📦 <b>このSTEPの成果物：</b>${s.output}</div>
+    <div class="stepfoot">
+      <button class="btn outline" ${cur===0?'disabled style="opacity:.4"':''} onclick="prev()">← 前のSTEP</button>
+      ${cur===STEPS.length-1
+        ? `<button class="btn primary" onclick="go('doc')">戦略書を見る 📄</button>`
+        : `<button class="btn dark" onclick="next()">保存して次へ →</button>`}
+    </div>`;
+  main.querySelectorAll('textarea').forEach(t=>{
+    t.addEventListener('input',e=>{
+      setAns(+e.target.dataset.step,e.target.dataset.q,e.target.value);
+      clearTimeout(window._sv); window._sv=setTimeout(()=>saveNow(false),600);
+    });
+  });
+  renderNav();
+  updateProgress();
+  document.querySelector('.stepnav')?.classList.remove('open');
+}
+
+function updateProgress(){
+  const done=totalDone(), pct=Math.round(done/STEPS.length*100);
+  document.getElementById('progLabel').textContent=`STEP ${cur+1} / 12`;
+  document.getElementById('progPct').textContent=`${pct}% 完了`;
+  document.getElementById('progBar').style.width=pct+'%';
+}
+function next(){ saveNow(false); if(cur<STEPS.length-1){cur++;renderStep();} }
+function prev(){ saveNow(false); if(cur>0){cur--;renderStep();} }
+
+/* ============================================================
+   Strategy doc
+   ============================================================ */
+function renderDoc(){
+  const host=document.getElementById('docBody');
+  const d=state.updated?new Date(state.updated).toLocaleDateString('ja-JP'):'—';
+  host.innerHTML=`
+    <div class="dochead">
+      <div class="t">マーケティング戦略書</div>
+      <div class="s">SHISEI LABO 12STEP METHOD　|　作成日：${d}　|　完了：${totalDone()}/12 STEP</div>
+    </div>
+    ${PHASES.map(ph=>STEPS.filter(s=>s.phase===ph.key).map(s=>{
+      const a=state.answers[s.no]||{};
+      const cm=(state.comments&&state.comments[s.no])||'';
+      return `<div class="docstep">
+        <h3><span class="no">STEP ${s.no}</span> ${s.title}</h3>
+        <div class="docqa">
+          ${s.questions.map(q=>{
+            const v=(a[q.id]||'').trim();
+            return `<div class="q">${q.label}</div><div class="a ${v?'':'empty'}">${v?esc(v):'（未入力）'}</div>`;
+          }).join('')}
+        </div>
+        ${cm?`<div class="advisorbox" style="margin-top:14px"><div class="h">🧭 アドバイス</div><p>${esc(cm)}</p></div>`:''}
+      </div>`;
+    }).join('')).join('')}`;
+}
+
+/* ============================================================
+   Share code (export / advisor)
+   ============================================================ */
+function exportShare(){
+  const code=btoa(unescape(encodeURIComponent(JSON.stringify({answers:state.answers,comments:state.comments||{},updated:state.updated}))));
+  copyText(code);
+  toast('共有コードをコピーしました。シセイラボへ送付できます');
+}
+function decodeShare(code){
+  return JSON.parse(decodeURIComponent(escape(atob(code.trim()))));
+}
+
+/* ============================================================
+   Cloud API（Pages Functions + D1）
+   ============================================================ */
+async function api(path, opts){
+  try{
+    const res=await fetch(path, opts);
+    let data=null; try{ data=await res.json(); }catch(e){}
+    return { ok: res.ok && data && data.ok!==false, status:res.status, data };
+  }catch(e){ return { ok:false, status:0, data:null }; }
+}
+
+/* ---- 企業：シセイラボに送信 ---- */
+function openSubmitModal(){
+  saveNow(false);
+  const c=state.cloud||{};
+  document.getElementById('smCompany').value=c.company||'';
+  document.getElementById('smEmail').value=c.email||'';
+  document.getElementById('smStatus').textContent=c.id?'※ 既に送信済みです。再送信すると最新内容で更新されます。':'';
+  document.getElementById('submitModal').classList.add('show');
+}
+function closeSubmitModal(){ document.getElementById('submitModal').classList.remove('show'); }
+async function cloudSubmit(){
+  const company=document.getElementById('smCompany').value.trim();
+  const email=document.getElementById('smEmail').value.trim();
+  const st=document.getElementById('smStatus');
+  if(!company||!email){ st.innerHTML='<span style="color:#c00">会社名とメールを入力してください</span>'; return; }
+  const btn=document.getElementById('smBtn'); btn.disabled=true; btn.textContent='送信中…'; st.textContent='送信中…';
+  const body={ company, email, answers:state.answers };
+  if(state.cloud&&state.cloud.id){ body.id=state.cloud.id; body.token=state.cloud.token; }
+  const r=await api('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  btn.disabled=false; btn.textContent='送信する';
+  if(!r.ok){
+    st.innerHTML = (r.status===0||r.status>=500)
+      ? '<span style="color:#c00">送信できませんでした。この機能はCloudflare公開後に有効になります（ローカルは wrangler pages dev で確認）。</span>'
+      : '<span style="color:#c00">送信に失敗しました（'+((r.data&&r.data.error)||r.status)+'）</span>';
+    return;
+  }
+  state.cloud={ id:r.data.id, token:r.data.token, company, email }; saveNow(false);
+  st.innerHTML='<span style="color:var(--good)">✓ 送信しました。シセイラボが確認しアドバイスをお返しします。</span>';
+  toast(r.data.updated?'内容を更新しました':'送信が完了しました');
+  setTimeout(closeSubmitModal,1500);
+}
+
+/* ---- 企業：アドバイスを確認 ---- */
+async function checkAdvice(){
+  if(!(state.cloud&&state.cloud.id)){ toast('先に「シセイラボに送信」してください'); return; }
+  toast('アドバイスを確認中…');
+  const r=await api('/api/mine?id='+encodeURIComponent(state.cloud.id)+'&token='+encodeURIComponent(state.cloud.token));
+  if(!r.ok){ toast((r.status>=500||r.status===0)?'公開後に利用できます':'取得できませんでした'); return; }
+  state.comments=r.data.advice||{}; saveNow(false);
+  const n=Object.values(state.comments).filter(v=>v&&v.trim()).length;
+  if(n>0){ toast(n+'件のアドバイスを受信しました'); renderStep(); }
+  else toast('まだアドバイスは届いていません（状態：'+(r.data.status||'new')+'）');
+}
+
+/* ============================================================
+   Advisor（アドバイザー管理画面）
+   ============================================================ */
+let advData=null;   // {answers, comments, cloud, cloudId, company, email}
+let advToken='';    // 管理者トークン
+
+/* 共有コード（フォールバック） */
+function advLoad(){
+  const raw=document.getElementById('advInput').value.trim();
+  if(!raw){ toast('コードを貼り付けてください'); return; }
+  try{ advData=decodeShare(raw); }catch(e){ toast('コードを読み取れませんでした'); return; }
+  advData.comments=advData.comments||{}; advData.cloud=false;
+  renderAdv();
+}
+function advLoadMine(){
+  advData={answers:JSON.parse(JSON.stringify(state.answers)),comments:JSON.parse(JSON.stringify(state.comments||{})),cloud:false};
+  renderAdv();
+}
+
+/* クラウド */
+async function advCloudLogin(){
+  advToken=document.getElementById('advPass').value.trim();
+  if(!advToken){ toast('パスワードを入力してください'); return; }
+  await advCloudList();
+}
+async function advCloudList(){
+  const r=await api('/api/list',{headers:{'X-Admin-Token':advToken}});
+  if(!r.ok){
+    if(r.status===401){ toast('パスワードが違います'); return; }
+    toast((r.status>=500||r.status===0)?'公開後に利用できます':'取得できませんでした'); return;
+  }
+  document.getElementById('advListWrap').classList.remove('hidden');
+  const items=r.data.items||[]; const L={new:'未対応',reviewing:'確認中',done:'完了'};
+  document.getElementById('advListMeta').textContent=items.length+'件の送信';
+  document.getElementById('advList').innerHTML = items.length ? items.map(it=>`
+    <button class="btn outline sm" style="display:flex;justify-content:space-between;gap:12px;width:100%;text-align:left;margin-bottom:6px" onclick="advCloudOpen('${it.id}')">
+      <span><b>${esc(it.company||'(無名)')}</b> <span style="color:var(--soft)">${esc(it.email||'')}</span></span>
+      <span style="color:var(--muted);white-space:nowrap">${L[it.status]||it.status}・${(it.created_at||'').slice(0,10)}</span>
+    </button>`).join('') : '<p style="color:var(--muted);font-size:13px">まだ送信はありません。</p>';
+}
+async function advCloudOpen(id){
+  const r=await api('/api/get?id='+encodeURIComponent(id),{headers:{'X-Admin-Token':advToken}});
+  if(!r.ok){ toast('読み込めませんでした'); return; }
+  advData={ answers:r.data.answers||{}, comments:r.data.advice||{}, cloud:true, cloudId:id, company:r.data.company, email:r.data.email, status:r.data.status };
+  renderAdv();
+  document.getElementById('advStatus').value = (r.data.status==='new'||!r.data.status)?'reviewing':r.data.status;
+  document.getElementById('advWorkspace').scrollIntoView({behavior:'smooth'});
+}
+async function advCloudSave(){
+  if(!advData||!advData.cloud) return;
+  const status=document.getElementById('advStatus').value;
+  const r=await api('/api/advise',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Token':advToken},body:JSON.stringify({id:advData.cloudId,advice:advData.comments,status})});
+  if(!r.ok){ toast('保存に失敗しました'); return; }
+  toast('クラウドに保存しました（企業へ返却）');
+}
+
+function renderAdv(){
+  document.getElementById('advWorkspace').classList.remove('hidden');
+  const cloud=!!(advData&&advData.cloud);
+  document.getElementById('advCloudSave').classList.toggle('hidden',!cloud);
+  document.getElementById('advCodeSave').classList.toggle('hidden',cloud);
+  document.getElementById('advMeta').textContent = cloud
+    ? `送信元：${advData.company||'(無名)'}　${advData.email||''}`
+    : 'モード：共有コード（手動返却）';
+  const host=document.getElementById('advSteps');
+  host.innerHTML=STEPS.map(s=>{
+    const a=advData.answers[s.no]||{};
+    const filled=s.questions.filter(q=>(a[q.id]||'').trim());
+    return `<div class="adv-step">
+      <div class="ah"><span class="no">STEP ${s.no}</span>${s.title}</div>
+      ${filled.length?filled.map(q=>`<div class="adv-qa"><div class="q">${q.label}</div><div class="a">${esc(a[q.id])}</div></div>`).join('')
+        :'<div class="adv-qa" style="color:#aaa">（この企業は未入力）</div>'}
+      <textarea class="cm" data-step="${s.no}" placeholder="このSTEPへのアドバイスを記入…">${esc(advData.comments[s.no]||'')}</textarea>
+    </div>`;
+  }).join('');
+  host.querySelectorAll('textarea.cm').forEach(t=>{
+    t.addEventListener('input',e=>{
+      advData.comments[e.target.dataset.step]=e.target.value;
+      if(!cloud) advExport(true);
+    });
+  });
+  if(!cloud) advExport(true);
+}
+function advExport(silent){
+  const code=btoa(unescape(encodeURIComponent(JSON.stringify({answers:advData.answers,comments:advData.comments,updated:new Date().toISOString()}))));
+  const out=document.getElementById('advOutput'); if(out) out.value=code;
+  if(!silent){ copyText(code); toast('コメント付きコードをコピーしました'); }
+}
+
+/* ============================================================
+   Glossary + helpers
+   ============================================================ */
+function openGlossary(){
+  document.getElementById('glossaryBody').innerHTML=GLOSSARY.map(g=>`<div class="gterm"><b>${g[0]}</b><p>${g[1]}</p></div>`).join('');
+  document.getElementById('glossary').classList.add('show');
+}
+function closeGlossary(){ document.getElementById('glossary').classList.remove('show'); }
+
+function esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function copyText(t){
+  if(navigator.clipboard){ navigator.clipboard.writeText(t).catch(()=>fallbackCopy(t)); }
+  else fallbackCopy(t);
+}
+function fallbackCopy(t){ const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove(); }
+let _tt;
+function toast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2600); }
+
+/* init */
+renderOverview();
+</script>
+</body>
+</html>
