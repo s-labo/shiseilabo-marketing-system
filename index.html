@@ -46,67 +46,87 @@
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
   /* ---------- HERO ---------- */
-  .hero{background:radial-gradient(1200px 600px at 80% -10%,rgba(200,162,74,.18),transparent),linear-gradient(160deg,var(--navy),var(--navy2));color:#fff;padding:90px 0 80px;position:relative;overflow:hidden}
-  .hero::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M0 39h40M39 0v40' stroke='%23ffffff0d' stroke-width='1'/%3E%3C/svg%3E");opacity:.5}
+  .hero{background:radial-gradient(900px 520px at 84% -10%,rgba(217,106,44,.18),transparent),linear-gradient(165deg,#0f1c30,var(--navy2));color:#fff;padding:130px 0 108px;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M0 43h44M43 0v44' stroke='%23ffffff08' stroke-width='1'/%3E%3C/svg%3E");opacity:.7}
   .hero .wrap{position:relative;z-index:1}
-  .eyebrow{display:inline-block;color:var(--gold2);letter-spacing:.22em;font-size:12px;border:1px solid rgba(200,162,74,.4);padding:6px 14px;border-radius:30px;margin-bottom:26px}
-  .hero h1{font-family:var(--serif);font-size:clamp(30px,5vw,52px);line-height:1.35;font-weight:600;letter-spacing:.01em}
+  .eyebrow{display:inline-flex;align-items:center;gap:14px;color:var(--gold2);letter-spacing:.26em;font-size:11.5px;font-weight:500;margin-bottom:32px}
+  .eyebrow::before{content:"";width:34px;height:1px;background:var(--gold)}
+  .hero h1{font-family:var(--serif);font-size:clamp(33px,5.2vw,56px);line-height:1.34;font-weight:600;letter-spacing:.015em}
   .hero h1 b{color:var(--gold2);font-weight:600}
-  .hero p.lead{margin-top:24px;font-size:clamp(15px,2vw,18px);color:#d3d9e7;max-width:640px}
-  .hero .btns{margin-top:40px;display:flex;gap:14px;flex-wrap:wrap}
-  .btn{display:inline-flex;align-items:center;gap:8px;padding:15px 30px;border-radius:40px;font-weight:700;cursor:pointer;border:0;font-family:inherit;font-size:15px;transition:.2s}
-  .btn.primary{background:var(--gold);color:var(--navy)}
+  .hero .rule{width:64px;height:3px;background:var(--gold);margin-top:36px;border-radius:2px}
+  .hero p.lead{margin-top:30px;font-size:clamp(15px,1.6vw,17px);line-height:1.95;color:#cfd6e6;max-width:600px}
+  .hero .btns{margin-top:44px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:15px 32px;border-radius:40px;font-weight:700;cursor:pointer;border:0;font-family:inherit;font-size:15px;transition:.2s}
+  .btn.primary{background:var(--gold);color:#fff}
   .btn.primary:hover{background:var(--gold2);transform:translateY(-2px)}
-  .btn.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.22)}
-  .btn.ghost:hover{background:rgba(255,255,255,.16)}
-  .hero .stats{margin-top:54px;display:flex;gap:46px;flex-wrap:wrap}
-  .hero .stats div{border-left:2px solid var(--gold)}
-  .hero .stats .n{font-family:var(--serif);font-size:34px;color:#fff;padding-left:16px;line-height:1}
-  .hero .stats .l{padding-left:16px;color:var(--soft);font-size:12px;margin-top:6px}
+  .btn.ghost{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.24)}
+  .btn.ghost:hover{background:rgba(255,255,255,.14)}
+  .hero .stats{margin-top:66px;display:flex;gap:54px;flex-wrap:wrap}
+  .hero .stat{padding-top:18px;border-top:1px solid rgba(255,255,255,.16);min-width:96px}
+  .hero .stat .n{font-family:var(--serif);font-size:42px;color:#fff;line-height:1;font-weight:500}
+  .hero .stat .l{color:var(--soft);font-size:11px;margin-top:11px;letter-spacing:.14em}
 
   /* ---------- Section ---------- */
-  section.block{padding:80px 0}
-  .sec-head{text-align:center;max-width:680px;margin:0 auto 54px}
-  .sec-head .tag{color:var(--gold);letter-spacing:.2em;font-size:12px;font-weight:700}
-  .sec-head h2{font-family:var(--serif);font-size:clamp(24px,3.5vw,34px);margin-top:12px;font-weight:600;color:var(--navy)}
-  .sec-head p{margin-top:16px;color:var(--muted)}
+  section.block{padding:106px 0}
+  [data-reveal]{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+  [data-reveal].in{opacity:1;transform:none}
+
+  /* manifesto / philosophy */
+  .manifesto{text-align:center}
+  .manifesto .mf-kicker{color:var(--gold);letter-spacing:.3em;font-size:11px;font-weight:700}
+  .manifesto .mf-title{font-family:var(--serif);font-size:clamp(30px,5.4vw,54px);color:var(--navy);font-weight:600;margin:20px 0 0;letter-spacing:.04em}
+  .manifesto .mf-body{max-width:600px;margin:28px auto 0;color:var(--muted);font-size:16px;line-height:2.05}
+
+  .sec-head{text-align:center;max-width:720px;margin:0 auto 62px}
+  .sec-head .tag{display:inline-flex;align-items:center;gap:12px;color:var(--gold);letter-spacing:.24em;font-size:11px;font-weight:700}
+  .sec-head .tag b{font-family:var(--serif);font-size:15px;font-weight:600;letter-spacing:.05em}
+  .sec-head .tag i{width:26px;height:1px;background:var(--gold);display:inline-block}
+  .sec-head h2{font-family:var(--serif);font-size:clamp(25px,3.6vw,36px);margin-top:18px;font-weight:600;color:var(--navy);line-height:1.46;letter-spacing:.01em}
+  .sec-head p{margin-top:18px;color:var(--muted);font-size:15.5px;line-height:1.9}
 
   /* problem cards */
-  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:30px}
-  .card h3{font-size:17px;color:var(--navy);margin-bottom:10px;display:flex;gap:10px;align-items:center}
-  .card h3 .dot{width:9px;height:9px;border-radius:50%;background:var(--gold)}
-  .card p{color:var(--muted);font-size:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:42px 34px;transition:.28s ease;position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;top:0;height:3px;width:0;background:var(--gold);transition:width .35s ease}
+  .card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:#d9d3c5}
+  .card:hover::before{width:100%}
+  .card .cnum{font-family:var(--serif);color:var(--gold);font-size:14px;letter-spacing:.12em;margin-bottom:20px}
+  .card h3{font-family:var(--serif);font-size:19px;color:var(--navy);margin-bottom:13px;font-weight:600;line-height:1.6}
+  .card p{color:var(--muted);font-size:14px;line-height:1.9}
 
   /* phases / steps overview */
   .phases{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .phaserow{display:grid;grid-template-columns:200px 1fr;gap:30px;padding:34px 0;border-bottom:1px dashed var(--line)}
+  .phaserow{display:grid;grid-template-columns:230px 1fr;gap:42px;padding:48px 0;border-bottom:1px solid var(--line)}
   .phaserow:last-child{border-bottom:0}
-  .phasemeta .pnum{font-family:var(--serif);font-size:40px;color:var(--gold);line-height:1}
-  .phasemeta .pname{font-weight:700;color:var(--navy);margin-top:8px;font-size:18px}
-  .phasemeta .pdesc{color:var(--muted);font-size:13px;margin-top:8px}
-  .stepcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
-  .stepcard{background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:16px;cursor:pointer;transition:.2s}
-  .stepcard:hover{border-color:var(--gold);box-shadow:var(--shadow);transform:translateY(-2px)}
-  .stepcard .sc-no{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.08em}
-  .stepcard .sc-t{font-weight:700;color:var(--navy);font-size:14px;margin-top:6px;line-height:1.5}
-  .stepcard .sc-f{margin-top:10px;display:flex;flex-wrap:wrap;gap:5px}
-  .chip{font-size:10px;background:#fff;border:1px solid var(--line);color:var(--soft);padding:3px 8px;border-radius:20px}
+  .phasemeta .pnum{font-family:var(--serif);font-size:52px;color:var(--gold);line-height:1;font-weight:500}
+  .phasemeta .plabel{font-size:10px;letter-spacing:.2em;color:var(--soft);margin-top:12px}
+  .phasemeta .pname{font-family:var(--serif);font-weight:600;color:var(--navy);margin-top:5px;font-size:21px}
+  .phasemeta .pdesc{color:var(--muted);font-size:13px;margin-top:11px;line-height:1.8;max-width:210px}
+  .stepcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:14px}
+  .stepcard{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px;cursor:pointer;transition:.22s ease}
+  .stepcard:hover{border-color:var(--gold);box-shadow:var(--shadow);transform:translateY(-3px)}
+  .stepcard .sc-no{font-size:10.5px;font-weight:700;color:var(--gold);letter-spacing:.12em}
+  .stepcard .sc-t{font-weight:700;color:var(--navy);font-size:14px;margin-top:7px;line-height:1.6}
+  .stepcard .sc-f{margin-top:12px;display:flex;flex-wrap:wrap;gap:5px}
+  .chip{font-size:10px;background:var(--bg);border:1px solid var(--line);color:var(--soft);padding:3px 9px;border-radius:20px}
 
   /* how it works */
-  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:fl}
-  .flowstep{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:28px 22px}
-  .flowstep .fn{width:38px;height:38px;border-radius:50%;background:var(--navy);color:var(--gold2);display:grid;place-items:center;font-family:var(--serif);font-size:18px;margin-bottom:16px}
-  .flowstep h4{color:var(--navy);font-size:16px;margin-bottom:8px}
-  .flowstep p{color:var(--muted);font-size:13px}
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+  .flowstep{position:relative;padding:0 28px}
+  .flowstep:first-child{padding-left:0}
+  .flowstep:not(:last-child)::after{content:"";position:absolute;right:0;top:26px;width:1px;height:calc(100% - 26px);background:var(--line)}
+  .flowstep .fn{width:54px;height:54px;border-radius:50%;border:1px solid var(--gold);background:#fff;color:var(--gold);display:grid;place-items:center;font-family:var(--serif);font-size:22px;margin-bottom:22px}
+  .flowstep h4{font-family:var(--serif);color:var(--navy);font-size:17px;margin-bottom:10px;font-weight:600}
+  .flowstep p{color:var(--muted);font-size:13.5px;line-height:1.85}
 
   /* CTA band */
-  .ctaband{background:linear-gradient(120deg,var(--navy),var(--navy2));color:#fff;border-radius:20px;padding:54px;text-align:center}
-  .ctaband h2{font-family:var(--serif);font-size:clamp(22px,3vw,30px);font-weight:600}
-  .ctaband p{color:#cdd3e1;margin:14px 0 28px}
+  .ctaband{background:radial-gradient(700px 380px at 100% 0,rgba(217,106,44,.22),transparent),linear-gradient(120deg,#0f1c30,var(--navy2));color:#fff;border-radius:18px;padding:74px 48px;text-align:center;position:relative;overflow:hidden}
+  .ctaband .rule{width:54px;height:3px;background:var(--gold);margin:0 auto 26px;border-radius:2px}
+  .ctaband h2{font-family:var(--serif);font-size:clamp(24px,3.2vw,34px);font-weight:600;line-height:1.5}
+  .ctaband p{color:#cdd3e1;margin:18px 0 32px;font-size:15px}
 
   /* footer */
-  footer{background:var(--navy);color:#aeb6c9;padding:48px 0;font-size:13px}
+  footer{background:var(--navy);color:#9aa3b5;padding:56px 0;font-size:13px;border-top:3px solid var(--gold)}
   footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;align-items:center}
   footer a{color:#cdd3e1}footer a:hover{color:#fff}
 
@@ -201,7 +221,12 @@
 
   @media(max-width:880px){
     .grid3,.flow{grid-template-columns:1fr}
+    section.block{padding:70px 0}
+    .flow{gap:36px}
+    .flowstep{padding:0}
+    .flowstep:not(:last-child)::after{display:none}
     .phaserow{grid-template-columns:1fr;gap:16px}
+    .phasemeta .pdesc{max-width:none}
     .wizlayout{grid-template-columns:1fr}
     .stepnav{position:static;max-height:none;display:none}
     .stepnav.open{display:block}
@@ -239,33 +264,43 @@
 <main id="view-home" class="view active">
   <section class="hero">
     <div class="wrap">
-      <span class="eyebrow">想像以上を、創造で。 ／ SHISEILABO METHOD</span>
+      <span class="eyebrow">想像以上を、創造で。　SHISEILABO METHOD</span>
       <h1>12の問いに答えるだけで、<br><b>自社のブランド戦略書</b>が完成する。</h1>
+      <div class="rule"></div>
       <p class="lead">「何から手をつければいいか分からない」を終わらせる。シセイラボが実務で磨いた12STEPの実践メソッドを、誰でも順番に進められる立案システムにしました。現状分析から実行計画まで、一本の論理で繋ぎます。</p>
       <div class="btns">
         <button class="btn primary" onclick="go('wizard')">戦略立案を始める（無料）</button>
         <button class="btn ghost" onclick="document.getElementById('method').scrollIntoView()">メソッドを見る</button>
       </div>
       <div class="stats">
-        <div><div class="n">5</div><div class="l">PHASES / フェーズ</div></div>
-        <div><div class="n">12</div><div class="l">STEPS / ステップ</div></div>
-        <div><div class="n">1</div><div class="l">一貫した論理</div></div>
+        <div class="stat"><div class="n">5</div><div class="l">PHASES / フェーズ</div></div>
+        <div class="stat"><div class="n">12</div><div class="l">STEPS / ステップ</div></div>
+        <div class="stat"><div class="n">1</div><div class="l">一貫した論理</div></div>
       </div>
     </div>
   </section>
 
+  <!-- manifesto -->
+  <section class="block manifesto">
+    <div class="wrap" data-reveal>
+      <div class="mf-kicker">PHILOSOPHY</div>
+      <div class="mf-title">想像以上を、創造で。</div>
+      <p class="mf-body">創造性で、資産を増やす。── シセイラボが伴走の現場で磨いてきたマーケティングの「型」を、いま、すべての企業が自らの手で使える形にしました。</p>
+    </div>
+  </section>
+
   <!-- problems -->
-  <section class="block">
+  <section class="block" style="background:#fff;border-top:1px solid var(--line)">
     <div class="wrap">
-      <div class="sec-head">
-        <div class="tag">SUCH PROBLEMS?</div>
+      <div class="sec-head" data-reveal>
+        <div class="tag"><b>01</b><i></i>SUCH PROBLEMS?</div>
         <h2>マーケティング・ブランディングの<br>「つまずき」に、順序で答える。</h2>
         <p>多くの企業は戦術（HOW）から始めてしまいます。本メソッドは「誰に・なぜ・何を」を先に固め、打率の高い戦術へ落とし込みます。</p>
       </div>
-      <div class="grid3">
-        <div class="card"><h3><span class="dot"></span>戦略がなく施策が場当たり的</h3><p>SNSも広告もやっているのに成果が積み上がらない。土台となる戦略エクイティが定義されていないことが原因です。</p></div>
-        <div class="card"><h3><span class="dot"></span>「自社の強み」を言語化できない</h3><p>USP（選ばれる理由）とRTB（その根拠）が曖昧なまま。競合との差別化点を構造的に導きます。</p></div>
-        <div class="card"><h3><span class="dot"></span>誰に売るかが定まっていない</h3><p>ターゲットが「みんな」になっている。STPと独自の顧客セグメントで、攻める相手を明確にします。</p></div>
+      <div class="grid3" data-reveal>
+        <div class="card"><div class="cnum">01</div><h3>戦略がなく施策が場当たり的</h3><p>SNSも広告もやっているのに成果が積み上がらない。土台となる戦略エクイティが定義されていないことが原因です。</p></div>
+        <div class="card"><div class="cnum">02</div><h3>「自社の強み」を言語化できない</h3><p>USP（選ばれる理由）とRTB（その根拠）が曖昧なまま。競合との差別化点を構造的に導きます。</p></div>
+        <div class="card"><div class="cnum">03</div><h3>誰に売るかが定まっていない</h3><p>ターゲットが「みんな」になっている。STPと独自の顧客セグメントで、攻める相手を明確にします。</p></div>
       </div>
     </div>
   </section>
@@ -273,23 +308,23 @@
   <!-- method overview -->
   <section class="block phases" id="method">
     <div class="wrap">
-      <div class="sec-head">
-        <div class="tag">THE METHOD</div>
+      <div class="sec-head" data-reveal>
+        <div class="tag"><b>02</b><i></i>THE METHOD</div>
         <h2>5フェーズ・12ステップの全体像</h2>
         <p>各ステップの出力が、次のステップの入力になる「積み上げ式」。クリックすると、そのステップから立案を始められます。</p>
       </div>
-      <div id="phaseOverview"></div>
+      <div id="phaseOverview" data-reveal></div>
     </div>
   </section>
 
   <!-- how it works -->
   <section class="block">
     <div class="wrap">
-      <div class="sec-head">
-        <div class="tag">HOW IT WORKS</div>
+      <div class="sec-head" data-reveal>
+        <div class="tag"><b>03</b><i></i>HOW IT WORKS</div>
         <h2>使い方は、かんたん4ステップ</h2>
       </div>
-      <div class="flow">
+      <div class="flow" data-reveal>
         <div class="flowstep"><div class="fn">1</div><h4>問いに答える</h4><p>12STEPの質問に、自社の状況を入力。回答はブラウザに自動保存されます。</p></div>
         <div class="flowstep"><div class="fn">2</div><h4>戦略書ができる</h4><p>入力内容が1枚の戦略書として自動で整います。印刷・PDF保存も可能。</p></div>
         <div class="flowstep"><div class="fn">3</div><h4>共有コードを出力</h4><p>「共有コード」を発行してシセイラボに送付。アドバイスを依頼できます。</p></div>
@@ -301,7 +336,8 @@
   <!-- cta -->
   <section class="block">
     <div class="wrap">
-      <div class="ctaband">
+      <div class="ctaband" data-reveal>
+        <div class="rule"></div>
         <h2>あなたの会社の戦略書を、今日つくり始める。</h2>
         <p>登録不要・無料。途中保存できるので、少しずつ進められます。</p>
         <button class="btn primary" onclick="go('wizard')">12STEP立案を始める →</button>
@@ -698,6 +734,7 @@ function renderOverview(){
     return `<div class="phaserow">
       <div class="phasemeta">
         <div class="pnum">${ph.no.replace('PHASE ','')}</div>
+        <div class="plabel">${ph.no}</div>
         <div class="pname">${ph.name}</div>
         <div class="pdesc">${ph.desc}</div>
       </div>
@@ -979,8 +1016,19 @@ function fallbackCopy(t){ const ta=document.createElement('textarea');ta.value=t
 let _tt;
 function toast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2600); }
 
+/* スクロール時のフェードイン演出 */
+function initReveal(){
+  const els=document.querySelectorAll('[data-reveal]:not(.in)');
+  if(!('IntersectionObserver' in window)){ els.forEach(e=>e.classList.add('in')); return; }
+  const io=new IntersectionObserver((ents)=>{
+    ents.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+  },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+  els.forEach(e=>io.observe(e));
+}
+
 /* init */
 renderOverview();
+initReveal();
 </script>
 </body>
 </html>
