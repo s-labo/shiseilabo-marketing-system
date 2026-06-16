@@ -12,7 +12,7 @@
   :root{
     /* シセイラボ ブランドカラー（デジタルカタログ準拠） */
     --navy:#14233A; --navy2:#1d3252; --ink:#14233A; --gold:#D96A2C; --gold2:#e58a4f;
-    --bg:#f5f3ee; --paper:#ffffff; --line:#e4e0d6; --muted:#5f6b7a; --soft:#94a0ad;
+    --bg:#f4f1ea; --paper:#ffffff; --line:#e6e1d5; --muted:#5b6675; --soft:#9aa3ad;
     --accent:#D96A2C; --good:#1f9d6b; --shadow:0 14px 50px rgba(20,35,58,.10);
     --r:6px; --maxw:1120px;
     --serif:"Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif;
@@ -61,10 +61,25 @@
   .btn.primary:hover{background:var(--gold2);transform:translateY(-2px)}
   .btn.ghost{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.24)}
   .btn.ghost:hover{background:rgba(255,255,255,.14)}
-  .hero .stats{margin-top:66px;display:flex;gap:54px;flex-wrap:wrap}
-  .hero .stat{padding-top:18px;border-top:1px solid rgba(255,255,255,.16);min-width:96px}
+  .hero .stats{margin-top:60px;display:flex;gap:48px;flex-wrap:wrap}
+  .hero .stat{padding-top:18px;border-top:1px solid rgba(255,255,255,.16);min-width:90px}
   .hero .stat .n{font-family:var(--serif);font-size:42px;color:#fff;line-height:1;font-weight:500}
   .hero .stat .l{color:var(--soft);font-size:11px;margin-top:11px;letter-spacing:.14em}
+  /* hero two-column + key visual */
+  .hero-grid{display:grid;grid-template-columns:1.12fr .88fr;gap:60px;align-items:center}
+  .hero h1{max-width:none}
+  .hero-visual{display:flex;justify-content:center}
+  .kv-card{position:relative;width:100%;max-width:380px;aspect-ratio:3/4;border-radius:14px;padding:26px;display:flex;flex-direction:column;
+    background:radial-gradient(120% 80% at 70% 10%,rgba(63,147,180,.22),transparent),linear-gradient(165deg,#16294a,#0c1626);
+    border:1px solid rgba(255,255,255,.12);box-shadow:0 30px 70px rgba(0,0,0,.35)}
+  .kv-card::after{content:"";position:absolute;inset:10px;border:1px solid rgba(255,255,255,.08);border-radius:9px;pointer-events:none}
+  .kv-top{display:flex;justify-content:space-between;align-items:baseline;position:relative;z-index:1}
+  .kv-top span{font-family:var(--serif);color:#fff;font-size:13px;letter-spacing:.14em}
+  .kv-top small{color:var(--gold2);font-size:9px;letter-spacing:.22em}
+  .kv-bird{flex:1;width:100%;height:auto;margin:6px 0;position:relative;z-index:1;filter:drop-shadow(0 12px 22px rgba(0,0,0,.35))}
+  .kv-cap{position:relative;z-index:1;font-family:var(--serif);color:#fff;font-size:21px;letter-spacing:.04em;line-height:1.5}
+  .kv-cap .kv-rule{display:block;width:42px;height:2px;background:var(--gold);margin-bottom:14px;border-radius:2px}
+  .kv-cap small{display:block;font-family:var(--sans);color:var(--soft);font-size:11px;letter-spacing:.08em;margin-top:8px}
 
   /* ---------- Section ---------- */
   section.block{padding:106px 0}
@@ -222,6 +237,9 @@
   @media(max-width:880px){
     .grid3,.flow{grid-template-columns:1fr}
     section.block{padding:70px 0}
+    .hero-grid{grid-template-columns:1fr;gap:48px}
+    .hero-visual{order:-1}
+    .kv-card{max-width:300px;margin:0 auto}
     .flow{gap:36px}
     .flowstep{padding:0}
     .flowstep:not(:last-child)::after{display:none}
@@ -232,7 +250,13 @@
     .stepnav.open{display:block}
     .nav nav{display:none}
     .stepmain,.doc,.panel{padding:24px}
-    .hero{padding:64px 0 54px}
+    .hero{padding:72px 0 60px}
+    .hero h1{font-size:clamp(26px,7.4vw,34px);line-height:1.42}
+    .hero p.lead{margin-top:24px;line-height:1.9}
+    .hero .stats{gap:32px;margin-top:48px}
+    .hero .stat .n{font-size:36px}
+    .sec-head{margin-bottom:44px}
+    .sec-head h2{line-height:1.5}
   }
   @media print{
     header.nav,.toolbar,.stepfoot,footer,.btn,.navtoggle{display:none!important}
@@ -263,20 +287,68 @@
 <!-- ===================== HOME / LP ===================== -->
 <main id="view-home" class="view active">
   <section class="hero">
-    <div class="wrap">
-      <span class="eyebrow">想像以上を、創造で。　SHISEILABO METHOD</span>
-      <h1>12の問いに答えるだけで、<br><b>自社のブランド戦略書</b>が完成する。</h1>
-      <div class="rule"></div>
-      <p class="lead">「何から手をつければいいか分からない」を終わらせる。シセイラボが実務で磨いた12STEPの実践メソッドを、誰でも順番に進められる立案システムにしました。現状分析から実行計画まで、一本の論理で繋ぎます。</p>
-      <div class="btns">
-        <button class="btn primary" onclick="go('wizard')">戦略立案を始める（無料）</button>
-        <button class="btn ghost" onclick="document.getElementById('method').scrollIntoView()">メソッドを見る</button>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow">想像以上を、創造で。　SHISEILABO METHOD</span>
+        <h1>12の問いに答えるだけで、<br>自社の<b>ブランドとログライン</b>が完成する。</h1>
+        <div class="rule"></div>
+        <p class="lead">「何から手をつければいいか分からない」を、終わらせる。シセイラボが実務で磨いた12STEPメソッドを、誰もが順を追って進められる立案システムに。現状分析から実行計画まで、一本の論理で貫きます。</p>
+        <div class="btns">
+          <button class="btn primary" onclick="go('wizard')">戦略立案を始める（無料）</button>
+          <button class="btn ghost" onclick="document.getElementById('method').scrollIntoView()">メソッドを見る</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="n">5</div><div class="l">PHASES / フェーズ</div></div>
+          <div class="stat"><div class="n">12</div><div class="l">STEPS / ステップ</div></div>
+          <div class="stat"><div class="n">1</div><div class="l">本のログライン</div></div>
+        </div>
       </div>
-      <div class="stats">
-        <div class="stat"><div class="n">5</div><div class="l">PHASES / フェーズ</div></div>
-        <div class="stat"><div class="n">12</div><div class="l">STEPS / ステップ</div></div>
-        <div class="stat"><div class="n">1</div><div class="l">一貫した論理</div></div>
-      </div>
+      <aside class="hero-visual">
+        <div class="kv-card">
+          <div class="kv-top"><span>SHISEILABO INC.</span><small>MARKETING METHOD</small></div>
+          <svg class="kv-bird" viewBox="0 0 320 384" xmlns="http://www.w3.org/2000/svg" aria-label="カワセミ">
+            <defs>
+              <linearGradient id="kvTeal" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#3f93b4"/><stop offset="1" stop-color="#1d566f"/>
+              </linearGradient>
+              <linearGradient id="kvTealDk" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#2c6e8c"/><stop offset="1" stop-color="#163f53"/>
+              </linearGradient>
+              <linearGradient id="kvOr" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#e58a4f"/><stop offset="1" stop-color="#cf5f24"/>
+              </linearGradient>
+            </defs>
+            <!-- branch -->
+            <path d="M34 322 C120 300 210 312 296 296" stroke="#caa06a" stroke-width="7" fill="none" stroke-linecap="round" opacity=".85"/>
+            <path d="M150 322 q40 -6 70 -16" stroke="#b98b53" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
+            <!-- tail -->
+            <path d="M196 250 L243 332 L200 286 Z" fill="url(#kvTealDk)"/>
+            <!-- body -->
+            <ellipse cx="170" cy="226" rx="60" ry="74" fill="url(#kvTeal)"/>
+            <!-- wing -->
+            <path d="M196 170 C232 184 240 244 214 286 C206 252 196 214 184 188 Z" fill="url(#kvTealDk)"/>
+            <!-- breast (orange) -->
+            <path d="M150 176 C112 196 104 250 126 286 C150 300 168 290 172 262 C178 220 176 192 168 176 Z" fill="url(#kvOr)"/>
+            <!-- throat -->
+            <ellipse cx="126" cy="168" rx="20" ry="16" fill="#f3efe6"/>
+            <!-- feet -->
+            <path d="M150 292 L150 318 M168 290 L172 316" stroke="#1c2a40" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <!-- head -->
+            <circle cx="150" cy="112" r="54" fill="url(#kvTeal)"/>
+            <!-- cheek patch -->
+            <path d="M108 120 C108 142 124 152 140 150 C150 130 150 108 140 92 C122 92 108 102 108 120 Z" fill="url(#kvOr)"/>
+            <!-- white ear spot -->
+            <circle cx="170" cy="92" r="11" fill="#f3efe6" opacity=".9"/>
+            <!-- beak -->
+            <path d="M101 116 L14 150 L104 134 Z" fill="#16263c"/>
+            <path d="M101 124 L14 150 L104 138 Z" fill="#e58a4f"/>
+            <!-- eye -->
+            <circle cx="128" cy="108" r="8" fill="#10203a"/>
+            <circle cx="131" cy="105" r="2.4" fill="#fff"/>
+          </svg>
+          <div class="kv-cap"><span class="kv-rule"></span>想像以上を、創造で。<small>創造性で、資産を増やす。</small></div>
+        </div>
+      </aside>
     </div>
   </section>
 
