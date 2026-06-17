@@ -943,6 +943,19 @@ function renderDoc(){
     }).join('')).join('')}`;
 }
 
+/* 戦略書の全文をプレーンテキスト化（メール本文用） */
+function buildDocText(){
+  const pct=scorePct(); let out='【マーケティング戦略書】SHISEILABO 12STEP METHOD\n';
+  out+='完成度スコア '+pct+'%（'+totalScore()+' / '+maxScore()+' pt）／グレード '+gradeFor(pct)+'\n';
+  PHASES.forEach(ph=>STEPS.filter(s=>s.phase===ph.key).forEach(s=>{
+    const a=state.answers[s.no]||{};
+    out+='\n■ STEP '+s.no+'　'+s.title+'\n';
+    s.questions.forEach((q,i)=>{ const v=(a[q.id]||'').trim();
+      out+='Q'+(qStart(s.no)+i+1)+'. '+q.label+'\n'+(v||'（未入力）')+'\n'; });
+  }));
+  return out;
+}
+
 /* ============================================================
    クラウド送信・アドバイス
    ============================================================ */
@@ -953,12 +966,14 @@ async function cloudSubmit(){
   const company=document.getElementById('smCompany').value.trim(), email=document.getElementById('smEmail').value.trim(), st=document.getElementById('smStatus');
   if(!company||!email){ st.innerHTML='<span style="color:#c00">会社名とメールを入力してください</span>'; return; }
   const btn=document.getElementById('smBtn'); btn.disabled=true; btn.textContent='送信中…'; st.textContent='送信中…';
-  const body={company,email,answers:state.answers}; if(state.cloud&&state.cloud.id){ body.id=state.cloud.id; body.token=state.cloud.token; }
+  const body={company,email,answers:state.answers,docText:buildDocText(),score:scorePct()+'%（'+totalScore()+'/'+maxScore()+'pt）'}; if(state.cloud&&state.cloud.id){ body.id=state.cloud.id; body.token=state.cloud.token; }
   const r=await api('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   btn.disabled=false; btn.textContent='送信する';
   if(!r.ok){ st.innerHTML=(r.status===0||r.status>=500)?'<span style="color:#c00">送信できませんでした（公開環境で有効）。</span>':'<span style="color:#c00">送信に失敗しました（'+((r.data&&r.data.error)||r.status)+'）</span>'; return; }
   state.cloud={id:r.data.id,token:r.data.token,company,email}; save(false);
-  st.innerHTML='<span style="color:var(--good)">✓ 送信しました。アドバイスをお待ちください。</span>'; toast(r.data.updated?'内容を更新しました':'送信が完了しました'); setTimeout(closeSubmit,1500);
+  if(r.data.emailed===false){ st.innerHTML='<span style="color:var(--good)">✓ 送信しました（保存完了）。</span><br><span style="color:#c80;font-size:12px">※メール送信は未完了'+(r.data.emailError?'：'+esc(r.data.emailError):'')+'</span>'; }
+  else { st.innerHTML='<span style="color:var(--good)">✓ 送信しました。'+(email?'登録メールにも控えをお送りしました。':'')+'</span>'; }
+  toast(r.data.updated?'内容を更新しました':'送信が完了しました'); setTimeout(closeSubmit,2200);
 }
 async function checkAdvice(){
   if(!(state.cloud&&state.cloud.id)){ toast('先に送信してください'); return; }
