@@ -138,6 +138,15 @@
   /* グループ選択（カテゴリ別キーワード） */
   .grp{margin-bottom:14px}
   .grp-h{font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.04em;margin:0 0 8px;padding-left:10px;border-left:3px solid var(--gold)}
+  /* 指標＋数値入力（KGI/KPI） */
+  .metrics{margin-top:4px}
+  .m-chips{margin-bottom:12px}
+  .m-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--bg);border-radius:11px;padding:10px 12px;margin-bottom:9px}
+  .m-name{flex:none;min-width:96px;font-weight:700;color:var(--navy);font-size:13.5px}
+  .m-fields{display:flex;gap:8px;flex:1;flex-wrap:wrap}
+  .m-f{flex:1;min-width:108px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:13.5px;background:#fff}
+  .m-f:focus{outline:0;border-color:var(--gold)}
+  select.m-f{cursor:pointer}
   /* 3行×複数項目の入力グリッド */
   .grid3{margin-top:4px}
   .g3-row{background:var(--bg);border-radius:12px;padding:13px 14px;margin-bottom:12px}
@@ -324,7 +333,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=12"></script>
+<script src="shisei-data.js?v=13"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -544,6 +553,28 @@ function refreshDependents(s,changedQid){
   step.questions.forEach(q=>{ if(q.type==='fromq'&&q.source===changedQid){ const el=document.getElementById('fromq-'+s+'-'+q.id); if(el) el.innerHTML=fromqChips(s,q); } });
 }
 
+/* 指標＋数値（KGI/KPI）設問 */
+function qDef(s,q){ const st=STEPS.find(x=>x.no===s); return st&&st.questions.find(x=>x.id===q); }
+function metricsHTML(s,q){ return `<div class="metrics" id="metrics-${s}-${q}"><div class="opts m-chips"></div><div class="m-rows"></div></div>`; }
+function mState(s,q){ state.metrics=state.metrics||{}; const k=s+'_'+q; if(!state.metrics[k]) state.metrics[k]={sel:[],vals:{}}; return state.metrics[k]; }
+function metricsInit(s,q){ const root=document.getElementById('metrics-'+s+'-'+q); if(!root) return; mChips(s,q); mRows(s,q); }
+function mChips(s,q){ const cfg=qDef(s,q), st=mState(s,q); const el=document.getElementById('metrics-'+s+'-'+q).querySelector('.m-chips');
+  el.innerHTML=cfg.options.map(o=>`<button type="button" class="opt${st.sel.includes(o)?' on':''}" onclick="mToggle(${s},'${q}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join(''); }
+function mToggle(s,q,m){ const cfg=qDef(s,q), st=mState(s,q), i=st.sel.indexOf(m);
+  if(i>=0){ st.sel.splice(i,1); delete st.vals[m]; } else { if(cfg.max&&st.sel.length>=cfg.max){ toast('選べるのは'+cfg.max+'つまでです'); return; } st.sel.push(m); st.vals[m]=st.vals[m]||{}; }
+  sfxPop(); mChips(s,q); mRows(s,q); mCommit(s,q); }
+function mRows(s,q){ const cfg=qDef(s,q), st=mState(s,q); const host=document.getElementById('metrics-'+s+'-'+q).querySelector('.m-rows');
+  host.innerHTML=st.sel.map(m=>{ const v=st.vals[m]||{};
+    const fields=cfg.fields.map(f=> f.type==='select'
+      ? `<select class="m-f" data-m="${esc(m)}" data-k="${f.key}"><option value="">${f.label}</option>${f.options.map(o=>`<option ${v[f.key]===o?'selected':''}>${o}</option>`).join('')}</select>`
+      : `<input class="m-f" data-m="${esc(m)}" data-k="${f.key}" value="${esc(v[f.key]||'')}" placeholder="${f.label}${f.placeholder?'（'+f.placeholder+'）':''}">`).join('');
+    return `<div class="m-row"><span class="m-name">${m}</span><div class="m-fields">${fields}</div></div>`; }).join('');
+  host.querySelectorAll('.m-f').forEach(el=>{ el.addEventListener('input',()=>mField(s,q)); el.addEventListener('change',()=>mField(s,q)); }); }
+function mField(s,q){ const st=mState(s,q); document.getElementById('metrics-'+s+'-'+q).querySelectorAll('.m-f').forEach(el=>{ const m=el.dataset.m,k=el.dataset.k; st.vals[m]=st.vals[m]||{}; st.vals[m][k]=el.value; }); mCommit(s,q); }
+function mCommit(s,q){ const cfg=qDef(s,q), st=mState(s,q);
+  const text=st.sel.map(m=>{ const v=st.vals[m]||{}; const desc=cfg.fields.map(f=>(v[f.key]||'').toString().trim()).filter(Boolean).join(' / '); return desc? m+'：'+desc : m; }).join(' ／ ');
+  setAns(s,q,text); updateQScore(s,q); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),500); }
+
 /* 3行×複数項目の入力グリッド設問 */
 function grid3HTML(s,q,cols){
   return `<div class="grid3" id="grid3-${s}-${q}">`+[0,1,2].map(r=>
@@ -667,6 +698,7 @@ function renderStep(){
       if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='seg3'){ return `<div class="qblock">${head}${seg3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='grid3'){ return `<div class="qblock">${head}${grid3HTML(s.no,q.id,q.cols)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='metrics'){ return `<div class="qblock">${head}${metricsHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='fromq'){ return `<div class="qblock">${head}<div class="fromq" id="fromq-${s.no}-${q.id}">${fromqChips(s.no,q)}</div>
         <textarea data-s="${s.no}" data-q="${q.id}" placeholder="選択がここに入ります（自由に追記・編集もOK）">${esc(val)}</textarea>
         <div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
@@ -688,7 +720,7 @@ function renderStep(){
   document.querySelectorAll('#stepBody textarea').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); refreshDependents(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
-  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); updateQScore(s.no,q.id); });
+  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
 }
 function pick(el,s,q,text){
