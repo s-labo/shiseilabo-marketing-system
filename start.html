@@ -244,8 +244,7 @@
     <div class="spacer"></div>
     <div class="acts">
       <button class="btn outline" id="soundBtn" onclick="toggleSound()" title="効果音 ON/OFF" style="padding:9px 12px">🔊</button>
-      <button class="btn outline" onclick="openGlossary()">用語集</button>
-      <button class="btn outline" onclick="showDoc()">📄 戦略書</button>
+      <button class="btn outline" onclick="resumeSaved()">📄 保存中の戦略書</button>
       <button class="btn solid" onclick="openSubmit()">☁️ 送信</button>
     </div>
   </div>
@@ -341,7 +340,7 @@
 const LS_KEY='shiseilabo_strategy_v1';
 let state=load(), cur=0, prevGrown=0;
 function load(){ try{ const d=JSON.parse(localStorage.getItem(LS_KEY)); return d&&d.answers?d:{answers:{},comments:{},cloud:null,updated:null}; }catch(e){ return {answers:{},comments:{},cloud:null,updated:null}; } }
-function save(notify){ state.updated=new Date().toISOString(); localStorage.setItem(LS_KEY,JSON.stringify(state)); if(notify) toast('保存しました'); }
+function save(notify){ state.updated=new Date().toISOString(); state.lastStep=cur; localStorage.setItem(LS_KEY,JSON.stringify(state)); if(notify) toast('保存しました'); }
 function ans(s,q){ return (state.answers[s]&&state.answers[s][q])||''; }
 function setAns(s,q,v){ state.answers[s]=state.answers[s]||{}; state.answers[s][q]=v; }
 
@@ -537,9 +536,15 @@ function renderPills(){
   document.getElementById('stepLabel').textContent=`STEP ${cur+1} / 12`;
   document.getElementById('pbar').style.width=scorePct()+'%';
 }
-function goStep(i){ save(false); cur=Math.max(0,Math.min(STEPS.length-1,i)); renderStep(); window.scrollTo({top:0,behavior:'smooth'}); }
+function goStep(i,fromPop){ cur=Math.max(0,Math.min(STEPS.length-1,i)); save(false);
+  const url='#s='+(cur+1);
+  if(!fromPop){ if(location.hash===url) history.replaceState({s:cur+1},'',url); else history.pushState({s:cur+1},'',url); }
+  showBuild(); renderStep(); window.scrollTo({top:0,behavior:'smooth'}); }
 function nextStep(){ save(false); checkStepComplete(STEPS[cur].no); if(cur<STEPS.length-1) goStep(cur+1); else showDoc(); }
 function prevStep(){ goStep(cur-1); }
+/* ヘッダー「保存中の戦略書」：ブラウザに最後に保存されたSTEPページを開く */
+function resumeSaved(){ let i=(state.lastStep!=null)?state.lastStep:cur; goStep(i); }
+window.addEventListener('popstate',function(){ const m=location.hash.match(/s=(\d+)/); if(m){ const n=+m[1]; if(n>=1&&n<=STEPS.length) goStep(n-1,true); } });
 
 /* 他設問の選択結果を選択肢にする設問（例：Q22←Q19） */
 function fromqChips(s,q){
@@ -803,7 +808,10 @@ let _tt; function toast(m){ const e=document.getElementById('toast'); e.textCont
 
 /* init */
 (function(){
-  const m=location.hash.match(/s=(\d+)/); if(m){ const n=+m[1]; if(n>=1&&n<=STEPS.length) cur=n-1; }
+  const m=location.hash.match(/s=(\d+)/);
+  if(m){ const n=+m[1]; if(n>=1&&n<=STEPS.length) cur=n-1; }
+  else if(state.lastStep!=null && state.lastStep>=0 && state.lastStep<STEPS.length){ cur=state.lastStep; }
+  history.replaceState({s:cur+1},'','#s='+(cur+1));   // 各STEPを個別ページ（URL）として扱う
   updateSoundBtn();
   // 読み込み時は効果音・演出を鳴らさない（庭の初期状態だけ反映）
   prevGrown=GROW.filter(g=>answeredCount()>=g.th).length;
