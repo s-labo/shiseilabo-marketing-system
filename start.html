@@ -133,6 +133,13 @@
   .qscore .dots i.on{background:var(--gold)}
   .qscore .lab{font-size:12.5px;color:var(--good);font-weight:700}
   .qscore .lab b{color:var(--gold)}
+  /* A・B・C 3行入力 */
+  .abc{margin-top:4px}
+  .abc-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+  .abc-k{flex:none;width:30px;height:30px;margin-top:8px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--serif);font-weight:600;font-size:14px;display:grid;place-items:center}
+  .abc-i{flex:1;border:1px solid var(--line);border-radius:12px;padding:13px 15px;font-family:inherit;font-size:15px;line-height:1.7;background:#fcfbf9;transition:.2s;min-height:46px;resize:vertical}
+  .abc-i:focus{outline:0;border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(217,106,44,.13)}
+
   /* ポジショニングマップ */
   .posmap{margin-top:4px}
   .pm-sels{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px}
@@ -297,7 +304,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=2"></script>
+<script src="shisei-data.js?v=3"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -505,6 +512,23 @@ function goStep(i){ save(false); cur=Math.max(0,Math.min(STEPS.length-1,i)); ren
 function nextStep(){ save(false); checkStepComplete(STEPS[cur].no); if(cur<STEPS.length-1) goStep(cur+1); else showDoc(); }
 function prevStep(){ goStep(cur-1); }
 
+/* A・B・C 3行入力設問 */
+function abcHTML(s,q){
+  return `<div class="abc" id="abc-${s}-${q}">`+['A','B','C'].map(k=>
+    `<div class="abc-row"><span class="abc-k">${k}</span><textarea class="abc-i" rows="1" data-k="${k}" placeholder="${k}：入力…"></textarea></div>`).join('')+`</div>`;
+}
+function abcInit(s,q){
+  const root=document.getElementById('abc-'+s+'-'+q); if(!root) return;
+  const key=s+'_'+q; state.abc=state.abc||{}; const v=state.abc[key]||{};
+  root.querySelectorAll('.abc-i').forEach(t=>{ t.value=v[t.dataset.k]||''; });
+  const commit=()=>{ const o={}; root.querySelectorAll('.abc-i').forEach(t=>{ o[t.dataset.k]=t.value; });
+    state.abc[key]=o;
+    const text=['A','B','C'].map(k=>o[k]&&o[k].trim()?k+'：'+o[k].trim():null).filter(Boolean).join(' ／ ');
+    setAns(s,q,text); updateQScore(s,q); renderPills(); renderGarden();
+    clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),500); };
+  root.querySelectorAll('.abc-i').forEach(t=>t.addEventListener('input',commit));
+}
+
 /* ポジショニングマップ設問 */
 const POS_AXES=[
   {n:'価格',lo:'低い',hi:'高い'},{n:'品質',lo:'低い',hi:'高い'},{n:'専門性',lo:'汎用的',hi:'専門的'},
@@ -567,6 +591,7 @@ function renderStep(){
       const val=ans(s.no,q.id), sel=val.split(/[、,\n]/).map(x=>x.trim()).filter(Boolean);
       const head=`<label><span class="qno">Q${qStart(s.no)+i+1}.</span>${q.label}</label><div class="hint">${q.hint}</div>`;
       if(q.type==='posmap'){ return `<div class="qblock">${head}${posmapHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       const opts=q.options?`<div class="opts">${q.options.map(o=>`<button type="button" class="opt${sel.includes(o)?' on':''}" onclick="pick(this,${s.no},'${q.id}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div>`:'';
       return `<div class="qblock">${head}${opts}
         <textarea data-s="${s.no}" data-q="${q.id}" placeholder="ここに自社の状況を入力…">${esc(val)}</textarea>
@@ -581,7 +606,7 @@ function renderStep(){
   document.querySelectorAll('#stepBody textarea').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
-  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); updateQScore(s.no,q.id); });
+  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
 }
 function pick(el,s,q,text){
