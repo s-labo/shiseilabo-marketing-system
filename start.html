@@ -133,6 +133,21 @@
   .qscore .dots i.on{background:var(--gold)}
   .qscore .lab{font-size:12.5px;color:var(--good);font-weight:700}
   .qscore .lab b{color:var(--gold)}
+  /* ポジショニングマップ */
+  .posmap{margin-top:4px}
+  .pm-sels{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+  .pm-field{flex:1;min-width:150px}
+  .pm-field span{display:block;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:5px}
+  .pm-field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:14px;background:#fff;cursor:pointer}
+  .pm-ytop,.pm-ybot{text-align:center;font-size:11.5px;font-weight:700;color:var(--navy);max-width:320px;margin:0 auto}
+  .pm-ytop{margin-bottom:6px}.pm-ybot{margin-top:6px}
+  .pm-area{position:relative;width:320px;max-width:100%;padding-top:min(320px,100%);margin:0 auto;background:linear-gradient(180deg,#fbf7ef,#f0ebe0);border:1px solid var(--line);border-radius:12px;cursor:crosshair;touch-action:none}
+  .pm-area .pm-cx{position:absolute;left:0;right:0;top:50%;height:1px;background:#dcd5c5}
+  .pm-area .pm-cy{position:absolute;top:0;bottom:0;left:50%;width:1px;background:#dcd5c5}
+  .pm-dot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);min-width:52px;height:30px;padding:0 12px;border-radius:30px;background:var(--gold);color:#fff;border:2px solid #fff;font-size:11px;font-weight:700;font-family:inherit;cursor:grab;box-shadow:0 5px 14px rgba(217,106,44,.45);white-space:nowrap;touch-action:none}
+  .pm-xrow{display:flex;justify-content:space-between;align-items:center;gap:8px;max-width:320px;margin:8px auto 0;font-size:11.5px;font-weight:700;color:var(--navy)}
+  .pm-xrow .pm-xname{color:var(--soft);font-weight:700}
+  .pm-read{margin:14px auto 0;max-width:340px;font-size:12.5px;color:var(--good);font-weight:700;line-height:1.6;text-align:center}
   .outputnote{margin-top:8px;padding:14px 18px;border:1px dashed var(--line);border-radius:11px;font-size:13.5px;color:var(--muted);background:var(--bg)}
   .outputnote b{color:var(--navy)}
   .foot{display:flex;justify-content:space-between;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
@@ -282,7 +297,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js"></script>
+<script src="shisei-data.js?v=2"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -490,6 +505,56 @@ function goStep(i){ save(false); cur=Math.max(0,Math.min(STEPS.length-1,i)); ren
 function nextStep(){ save(false); checkStepComplete(STEPS[cur].no); if(cur<STEPS.length-1) goStep(cur+1); else showDoc(); }
 function prevStep(){ goStep(cur-1); }
 
+/* ポジショニングマップ設問 */
+const POS_AXES=[
+  {n:'価格',lo:'低い',hi:'高い'},{n:'品質',lo:'低い',hi:'高い'},{n:'専門性',lo:'汎用的',hi:'専門的'},
+  {n:'対象',lo:'マス（大衆）',hi:'ニッチ（特化）'},{n:'デザイン',lo:'機能重視',hi:'情緒・世界観重視'},
+  {n:'提供形態',lo:'オンライン',hi:'オフライン'},{n:'価格帯',lo:'手頃',hi:'プレミアム'},
+  {n:'サポート',lo:'セルフ',hi:'手厚い'},{n:'認知度',lo:'低い',hi:'高い'},{n:'革新性',lo:'保守的',hi:'革新的'},
+  {n:'カスタム性',lo:'標準',hi:'オーダーメイド'}
+];
+function posmapHTML(s,q){
+  const opt=sel=>POS_AXES.map((a,i)=>`<option value="${i}">${a.n}（${a.lo}↔${a.hi}）</option>`).join('');
+  return `<div class="posmap" id="pm-${s}-${q}">
+    <div class="pm-sels">
+      <div class="pm-field"><span>横軸（X）</span><select class="pm-x">${opt()}</select></div>
+      <div class="pm-field"><span>縦軸（Y）</span><select class="pm-y">${opt()}</select></div>
+    </div>
+    <div class="pm-ytop"></div>
+    <div class="pm-area"><span class="pm-cx"></span><span class="pm-cy"></span><button type="button" class="pm-dot">自社</button></div>
+    <div class="pm-ybot"></div>
+    <div class="pm-xrow"><span class="pm-xlo"></span><span class="pm-xname"></span><span class="pm-xhi"></span></div>
+    <div class="pm-read"></div>
+  </div>`;
+}
+function posmapInit(s,q){
+  const root=document.getElementById('pm-'+s+'-'+q); if(!root) return;
+  const xs=root.querySelector('.pm-x'), ys=root.querySelector('.pm-y'), area=root.querySelector('.pm-area'), dot=root.querySelector('.pm-dot');
+  const key=s+'_'+q; state.posmap=state.posmap||{};
+  const saved=state.posmap[key]; let touched=!!saved;
+  const st=saved||{xi:0,yi:1,xv:50,yv:50};
+  xs.value=st.xi; ys.value=st.yi; let xv=st.xv, yv=st.yv;
+  const place=()=>{ dot.style.left=xv+'%'; dot.style.top=(100-yv)+'%'; };
+  const labels=()=>{ const X=POS_AXES[+xs.value], Y=POS_AXES[+ys.value];
+    root.querySelector('.pm-ytop').textContent='▲ '+Y.n+'：'+Y.hi;
+    root.querySelector('.pm-ybot').textContent='▼ '+Y.n+'：'+Y.lo;
+    root.querySelector('.pm-xlo').textContent='◀ '+X.lo;
+    root.querySelector('.pm-xname').textContent='横：'+X.n;
+    root.querySelector('.pm-xhi').textContent=X.hi+' ▶'; };
+  const commit=()=>{ const X=POS_AXES[+xs.value], Y=POS_AXES[+ys.value];
+    const xPole=xv>=50?X.hi:X.lo, yPole=yv>=50?Y.hi:Y.lo;
+    const text='X軸：'+X.n+'（'+X.lo+'↔'+X.hi+'）／Y軸：'+Y.n+'（'+Y.lo+'↔'+Y.hi+'）／自社の位置：横は「'+xPole+'」寄り・縦は「'+yPole+'」寄り';
+    root.querySelector('.pm-read').textContent='📍 '+text;
+    setAns(s,q,text); state.posmap[key]={xi:+xs.value,yi:+ys.value,xv:Math.round(xv),yv:Math.round(yv)};
+    updateQScore(s,q); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),400); };
+  const at=e=>{ const r=area.getBoundingClientRect(); xv=Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)); yv=Math.max(0,Math.min(100,100-(e.clientY-r.top)/r.height*100)); touched=true; place(); commit(); };
+  area.addEventListener('pointerdown',e=>{ try{area.setPointerCapture(e.pointerId);}catch(_){} at(e); });
+  area.addEventListener('pointermove',e=>{ if(e.buttons) at(e); });
+  xs.addEventListener('change',()=>{ labels(); if(touched) commit(); });
+  ys.addEventListener('change',()=>{ labels(); if(touched) commit(); });
+  labels(); place(); if(touched){ root.querySelector('.pm-read').textContent='📍 '+ans(s,q); }
+}
+
 function renderStep(){
   const s=STEPS[cur], ph=PHASES.find(p=>p.key===s.phase), comment=(state.comments&&state.comments[s.no])||'';
   document.getElementById('stepBody').innerHTML=`
@@ -500,10 +565,10 @@ function renderStep(){
     ${comment?`<div class="advisorbox"><div class="h">🧭 シセイラボからのアドバイス</div><p>${esc(comment)}</p></div>`:''}
     ${s.questions.map((q,i)=>{
       const val=ans(s.no,q.id), sel=val.split(/[、,\n]/).map(x=>x.trim()).filter(Boolean);
+      const head=`<label><span class="qno">Q${qStart(s.no)+i+1}.</span>${q.label}</label><div class="hint">${q.hint}</div>`;
+      if(q.type==='posmap'){ return `<div class="qblock">${head}${posmapHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       const opts=q.options?`<div class="opts">${q.options.map(o=>`<button type="button" class="opt${sel.includes(o)?' on':''}" onclick="pick(this,${s.no},'${q.id}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div>`:'';
-      return `<div class="qblock">
-        <label><span class="qno">Q${qStart(s.no)+i+1}.</span>${q.label}</label>
-        <div class="hint">${q.hint}</div>${opts}
+      return `<div class="qblock">${head}${opts}
         <textarea data-s="${s.no}" data-q="${q.id}" placeholder="ここに自社の状況を入力…">${esc(val)}</textarea>
         <div class="qscore" id="qs-${s.no}-${q.id}"></div>
       </div>`;
@@ -516,7 +581,7 @@ function renderStep(){
   document.querySelectorAll('#stepBody textarea').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
-  s.questions.forEach(q=>updateQScore(s.no,q.id));
+  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
 }
 function pick(el,s,q,text){
