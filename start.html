@@ -133,6 +133,9 @@
   .qscore .dots i.on{background:var(--gold)}
   .qscore .lab{font-size:12.5px;color:var(--good);font-weight:700}
   .qscore .lab b{color:var(--gold)}
+  /* グループ選択（カテゴリ別キーワード） */
+  .grp{margin-bottom:14px}
+  .grp-h{font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.04em;margin:0 0 8px;padding-left:10px;border-left:3px solid var(--gold)}
   /* A・B・C 3行入力 */
   .abc{margin-top:4px}
   .abc-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
@@ -304,7 +307,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=3"></script>
+<script src="shisei-data.js?v=4"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -592,6 +595,10 @@ function renderStep(){
       const head=`<label><span class="qno">Q${qStart(s.no)+i+1}.</span>${q.label}</label><div class="hint">${q.hint}</div>`;
       if(q.type==='posmap'){ return `<div class="qblock">${head}${posmapHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='grouped'){ const grps=q.groups.map(g=>`<div class="grp"><div class="grp-h">${g.name}</div><div class="opts">${g.items.map(o=>`<button type="button" class="opt${sel.includes(o)?' on':''}" onclick="pick(this,${s.no},'${q.id}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div></div>`).join('');
+        return `<div class="qblock">${head}${grps}
+          <textarea data-s="${s.no}" data-q="${q.id}" placeholder="選択がここに入ります（自由に追記・編集もOK）">${esc(val)}</textarea>
+          <div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       const opts=q.options?`<div class="opts">${q.options.map(o=>`<button type="button" class="opt${sel.includes(o)?' on':''}" onclick="pick(this,${s.no},'${q.id}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div>`:'';
       return `<div class="qblock">${head}${opts}
         <textarea data-s="${s.no}" data-q="${q.id}" placeholder="ここに自社の状況を入力…">${esc(val)}</textarea>
