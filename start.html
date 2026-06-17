@@ -184,6 +184,25 @@
   .pm-xrow{display:flex;justify-content:space-between;align-items:center;gap:8px;max-width:320px;margin:8px auto 0;font-size:11.5px;font-weight:700;color:var(--navy)}
   .pm-xrow .pm-xname{color:var(--soft);font-weight:700}
   .pm-read{margin:14px auto 0;max-width:340px;font-size:12.5px;color:var(--good);font-weight:700;line-height:1.6;text-align:center}
+  /* 3軸ポジショニング（立体） */
+  .posmap3{margin-top:4px}
+  .pm3-sels{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .pm3-stage{display:flex;justify-content:center;background:linear-gradient(180deg,#fbf7ef,#f0ebe0);border:1px solid var(--line);border-radius:14px;padding:6px}
+  .pm3-svg{width:300px;max-width:100%;height:auto}
+  .pm3-edge{stroke:#cdbf9f;stroke-width:1.4;fill:none}
+  .pm3-drop{stroke:var(--gold);stroke-width:1.4;stroke-dasharray:3 3;opacity:.85}
+  .pm3-floor{fill:#b9a673}
+  .pm3-dot{fill:var(--gold);stroke:#fff;stroke-width:2.5}
+  .pm3-me{fill:var(--navy);font-size:12px;font-weight:700;font-family:var(--serif)}
+  .pm3-ax{fill:var(--navy);font-size:10.5px;font-weight:700}
+  .pm3-axl{text-anchor:end}
+  .pm3-axm{text-anchor:middle}
+  .pm3-sliders{margin-top:14px;display:flex;flex-direction:column;gap:13px}
+  .pm3-srow{display:flex;flex-direction:column;gap:5px}
+  .pm3-slab{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px}
+  .pm3-slab b{color:var(--navy)}
+  .pm3-slab span{color:var(--muted);font-size:11px;font-weight:700}
+  .pm3-srow input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer}
   .outputnote{margin-top:8px;padding:14px 18px;border:1px dashed var(--line);border-radius:11px;font-size:13.5px;color:var(--muted);background:var(--bg)}
   .outputnote b{color:var(--navy)}
   .foot{display:flex;justify-content:space-between;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
@@ -332,7 +351,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=14"></script>
+<script src="shisei-data.js?v=15"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -688,6 +707,66 @@ function posmapInit(s,q){
   labels(); place(); if(touched){ root.querySelector('.pm-read').textContent='📍 '+ans(s,q); }
 }
 
+/* 3軸ポジショニング（立体・等角投影で可視化） */
+function posmap3HTML(s,q){
+  const opt=POS_AXES.map((a,i)=>`<option value="${i}">${a.n}（${a.lo}↔${a.hi}）</option>`).join('');
+  return `<div class="posmap3" id="pm3-${s}-${q}">
+    <div class="pm3-sels">
+      <div class="pm-field"><span>軸1（X）</span><select class="pm3-a">${opt}</select></div>
+      <div class="pm-field"><span>軸2（Y）</span><select class="pm3-b">${opt}</select></div>
+      <div class="pm-field"><span>軸3（Z）</span><select class="pm3-c">${opt}</select></div>
+    </div>
+    <div class="pm3-stage"><svg class="pm3-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"></svg></div>
+    <div class="pm3-sliders"></div>
+    <div class="pm-read pm3-read"></div>
+  </div>`;
+}
+function posmap3Init(s,q){
+  const root=document.getElementById('pm3-'+s+'-'+q); if(!root) return;
+  const as=root.querySelector('.pm3-a'), bs=root.querySelector('.pm3-b'), cs=root.querySelector('.pm3-c');
+  const svg=root.querySelector('.pm3-svg'), sliders=root.querySelector('.pm3-sliders');
+  const key=s+'_'+q; state.posmap3=state.posmap3||{};
+  const saved=state.posmap3[key]; let touched=!!saved;
+  const st=saved||{ai:0,bi:1,ci:2,av:50,bv:50,cv:50};
+  as.value=st.ai; bs.value=st.bi; cs.value=st.ci;
+  let av=st.av, bv=st.bv, cv=st.cv;
+  const ns='http://www.w3.org/2000/svg', O={x:150,y:150}, S=95, CX=0.866, CY=0.5;
+  const proj=(a,b,c)=>[ O.x+(a-c)*S*CX, O.y+(a+c)*S*CY-b*S ];
+  const mk=(t,at)=>{ const e=document.createElementNS(ns,t); for(const k in at) e.setAttribute(k,at[k]); return e; };
+  function plot(){
+    svg.innerHTML='';
+    const P={'000':proj(0,0,0),'100':proj(1,0,0),'001':proj(0,0,1),'101':proj(1,0,1),'010':proj(0,1,0),'110':proj(1,1,0),'011':proj(0,1,1),'111':proj(1,1,1)};
+    const edges=[['000','100'],['000','001'],['100','101'],['001','101'],['010','110'],['010','011'],['110','111'],['011','111'],['000','010'],['100','110'],['001','011'],['101','111']];
+    edges.forEach(([u,v])=>svg.appendChild(mk('line',{x1:P[u][0],y1:P[u][1],x2:P[v][0],y2:P[v][1],class:'pm3-edge'})));
+    const A=POS_AXES[+as.value],B=POS_AXES[+bs.value],C=POS_AXES[+cs.value];
+    const txA=mk('text',{x:P['100'][0]+4,y:P['100'][1]+15,class:'pm3-ax'}); txA.textContent=A.n+' ▶'; svg.appendChild(txA);
+    const txC=mk('text',{x:P['001'][0]-4,y:P['001'][1]+15,class:'pm3-ax pm3-axl'}); txC.textContent='◀ '+C.n; svg.appendChild(txC);
+    const txB=mk('text',{x:P['010'][0],y:P['010'][1]-10,class:'pm3-ax pm3-axm'}); txB.textContent=B.n+' ▲'; svg.appendChild(txB);
+    const a=av/100,b=bv/100,c=cv/100, p=proj(a,b,c), f=proj(a,0,c);
+    svg.appendChild(mk('line',{x1:f[0],y1:f[1],x2:p[0],y2:p[1],class:'pm3-drop'}));
+    svg.appendChild(mk('circle',{cx:f[0],cy:f[1],r:3,class:'pm3-floor'}));
+    svg.appendChild(mk('circle',{cx:p[0],cy:p[1],r:8,class:'pm3-dot'}));
+    const me=mk('text',{x:p[0]+12,y:p[1]-7,class:'pm3-me'}); me.textContent='自社'; svg.appendChild(me);
+  }
+  const commit=()=>{
+    const A=POS_AXES[+as.value],B=POS_AXES[+bs.value],C=POS_AXES[+cs.value], pole=(ax,v)=>v>=50?ax.hi:ax.lo;
+    const text=A.n+'（'+A.lo+'↔'+A.hi+'）／'+B.n+'（'+B.lo+'↔'+B.hi+'）／'+C.n+'（'+C.lo+'↔'+C.hi+'）／自社の位置：'+A.n+'は「'+pole(A,av)+'」寄り・'+B.n+'は「'+pole(B,bv)+'」寄り・'+C.n+'は「'+pole(C,cv)+'」寄り';
+    root.querySelector('.pm3-read').textContent='📍 '+text;
+    setAns(s,q,text); state.posmap3[key]={ai:+as.value,bi:+bs.value,ci:+cs.value,av:Math.round(av),bv:Math.round(bv),cv:Math.round(cv)};
+    updateQScore(s,q); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),400);
+  };
+  function renderSliders(){
+    const A=POS_AXES[+as.value],B=POS_AXES[+bs.value],C=POS_AXES[+cs.value];
+    const row=(cls,ax,val)=>`<div class="pm3-srow"><div class="pm3-slab"><b>${ax.n}</b><span>${ax.lo} ↔ ${ax.hi}</span></div><input type="range" min="0" max="100" value="${val}" class="${cls}"></div>`;
+    sliders.innerHTML=row('pm3-ra',A,av)+row('pm3-rb',B,bv)+row('pm3-rc',C,cv);
+    sliders.querySelector('.pm3-ra').addEventListener('input',e=>{ av=+e.target.value; touched=true; plot(); commit(); });
+    sliders.querySelector('.pm3-rb').addEventListener('input',e=>{ bv=+e.target.value; touched=true; plot(); commit(); });
+    sliders.querySelector('.pm3-rc').addEventListener('input',e=>{ cv=+e.target.value; touched=true; plot(); commit(); });
+  }
+  [as,bs,cs].forEach(se=>se.addEventListener('change',()=>{ renderSliders(); plot(); if(touched) commit(); }));
+  renderSliders(); plot(); if(touched){ root.querySelector('.pm3-read').textContent='📍 '+ans(s,q); }
+}
+
 function renderStep(){
   const s=STEPS[cur], ph=PHASES.find(p=>p.key===s.phase), comment=(state.comments&&state.comments[s.no])||'';
   document.getElementById('stepBody').innerHTML=`
@@ -700,6 +779,7 @@ function renderStep(){
       const val=ans(s.no,q.id), sel=val.split(/[、,\n]/).map(x=>x.trim()).filter(Boolean);
       const head=`<label><span class="qno">Q${qStart(s.no)+i+1}.</span>${q.label}</label><div class="hint">${q.hint}</div>`;
       if(q.type==='posmap'){ return `<div class="qblock">${head}${posmapHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='posmap3'){ return `<div class="qblock">${head}${posmap3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='seg3'){ return `<div class="qblock">${head}${seg3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='grid3'){ return `<div class="qblock">${head}${grid3HTML(s.no,q.id,q.cols)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
@@ -725,7 +805,7 @@ function renderStep(){
   document.querySelectorAll('#stepBody textarea').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); refreshDependents(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
-  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
+  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='posmap3') posmap3Init(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
 }
 function pick(el,s,q,text){
