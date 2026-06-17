@@ -203,6 +203,15 @@
   .pm3-slab b{color:var(--navy)}
   .pm3-slab span{color:var(--muted);font-size:11px;font-weight:700}
   .pm3-srow input[type=range]{width:100%;accent-color:var(--gold);cursor:pointer}
+  /* ログライン（物語ビルダー） */
+  .logline{margin-top:4px}
+  .ll-flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 9px;line-height:2;font-size:14px;color:var(--navy)}
+  .ll-flow select,.ll-flow input{border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-family:inherit;font-size:13.5px;background:#fff}
+  .ll-flow select{cursor:pointer;color:var(--navy)}
+  .ll-flow input{min-width:170px;flex:1}
+  .ll-flow select:focus,.ll-flow input:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,106,44,.12)}
+  .ll-fx{color:var(--soft);font-weight:600}
+  .ll-read{margin:16px 0 0;padding:14px 16px;background:var(--bg);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;font-family:var(--serif);font-size:14.5px;line-height:1.85;color:var(--navy);text-align:left;max-width:none}
   .outputnote{margin-top:8px;padding:14px 18px;border:1px dashed var(--line);border-radius:11px;font-size:13.5px;color:var(--muted);background:var(--bg)}
   .outputnote b{color:var(--navy)}
   .foot{display:flex;justify-content:space-between;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
@@ -351,7 +360,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=16"></script>
+<script src="shisei-data.js?v=17"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -767,6 +776,40 @@ function posmap3Init(s,q){
   renderSliders(); plot(); if(touched){ root.querySelector('.pm3-read').textContent='📍 '+ans(s,q); }
 }
 
+/* ログライン（物語ビルダー）設問 */
+function loglineHTML(s,q){
+  const cfg=qDef(s,q);
+  const oa='<option value="">顧客（主人公）を選択</option>'+cfg.whoOptions.map(o=>`<option>${o}</option>`).join('');
+  const ob='<option value="">悩み・課題を選択</option>'+cfg.painOptions.map(o=>`<option>${o}</option>`).join('');
+  return `<div class="logline" id="ll-${s}-${q}">
+    <div class="ll-flow">
+      <select class="ll-a">${oa}</select>
+      <span class="ll-fx">の顧客（主人公）が</span>
+      <select class="ll-b">${ob}</select>
+      <span class="ll-fx">という悩みやハードルを自社ブランドを利用することで乗り越え</span>
+      <input class="ll-i" placeholder="叶えたい希望・理想の状態">
+      <span class="ll-fx">を解決し希望を叶える話</span>
+    </div>
+    <div class="ll-read" style="display:none"></div>
+  </div>`;
+}
+function loglineInit(s,q){
+  const root=document.getElementById('ll-'+s+'-'+q); if(!root) return;
+  const a=root.querySelector('.ll-a'), b=root.querySelector('.ll-b'), i=root.querySelector('.ll-i'), read=root.querySelector('.ll-read');
+  const key=s+'_'+q; state.logline=state.logline||{};
+  const v=state.logline[key]||{}; a.value=v.a||''; b.value=v.b||''; i.value=v.i||'';
+  const commit=()=>{
+    state.logline[key]={a:a.value,b:b.value,i:i.value};
+    let text='';
+    if(a.value||b.value||i.value){ text=(a.value||'（顧客）')+'の顧客（主人公）が'+(b.value||'（悩み）')+'という悩みやハードルを自社ブランドを利用することで乗り越え'+(i.value||'（希望）')+'を解決し希望を叶える話'; }
+    if(text){ read.textContent='📖 '+text; read.style.display='block'; } else { read.textContent=''; read.style.display='none'; }
+    setAns(s,q,text); updateQScore(s,q); renderPills(); renderGarden();
+    clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),400);
+  };
+  a.addEventListener('change',commit); b.addEventListener('change',commit); i.addEventListener('input',commit);
+  if(v.a||v.b||v.i) commit();
+}
+
 function renderStep(){
   const s=STEPS[cur], ph=PHASES.find(p=>p.key===s.phase), comment=(state.comments&&state.comments[s.no])||'';
   document.getElementById('stepBody').innerHTML=`
@@ -780,6 +823,7 @@ function renderStep(){
       const head=`<label><span class="qno">Q${qStart(s.no)+i+1}.</span>${q.label}</label><div class="hint">${q.hint}</div>`;
       if(q.type==='posmap'){ return `<div class="qblock">${head}${posmapHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='posmap3'){ return `<div class="qblock">${head}${posmap3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='logline'){ return `<div class="qblock">${head}${loglineHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='seg3'){ return `<div class="qblock">${head}${seg3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='grid3'){ return `<div class="qblock">${head}${grid3HTML(s.no,q.id,q.cols)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
@@ -805,7 +849,7 @@ function renderStep(){
   document.querySelectorAll('#stepBody textarea').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); refreshDependents(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
-  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='posmap3') posmap3Init(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
+  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='posmap3') posmap3Init(s.no,q.id); if(q.type==='logline') loglineInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
 }
 function pick(el,s,q,text){
