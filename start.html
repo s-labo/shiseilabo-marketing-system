@@ -222,6 +222,21 @@
   .rows3-i,.deploy-i{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-family:inherit;font-size:14px;background:#fff;min-height:42px;resize:vertical;line-height:1.6}
   .rows3-i:focus,.deploy-i:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,106,44,.12)}
   .deploy-l{color:var(--gold)}
+  /* ミッション自動生成・起承転結 */
+  .mission{margin-top:4px}
+  .mv-box{background:var(--bg);border-radius:11px;padding:12px 15px;margin-bottom:12px}
+  .mv-h{font-size:12px;font-weight:700;color:var(--soft);margin-bottom:8px}
+  .mv-row{display:flex;gap:10px;padding:4px 0;font-size:13px;line-height:1.6}
+  .mv-k{flex:none;width:108px;font-weight:700;color:var(--navy)}
+  .mv-v.empty{color:var(--muted)}
+  .mv-gen{margin-bottom:10px;font-size:12.5px;padding:8px 14px}
+  .story4{margin-top:4px}
+  .st4-row{background:var(--bg);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+  .st4-h{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+  .st4-k{flex:none;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--serif);font-size:14px;display:grid;place-items:center}
+  .st4-sub{font-size:12.5px;font-weight:700;color:var(--soft)}
+  .st4-i{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-family:inherit;font-size:14px;background:#fff;cursor:pointer}
+  .st4-i:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,106,44,.12)}
   .outputnote{margin-top:8px;padding:14px 18px;border:1px dashed var(--line);border-radius:11px;font-size:13.5px;color:var(--muted);background:var(--bg)}
   .outputnote b{color:var(--navy)}
   .foot{display:flex;justify-content:space-between;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
@@ -370,7 +385,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=19"></script>
+<script src="shisei-data.js?v=20"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -855,6 +870,46 @@ function deployInit(s,q){ const root=document.getElementById('deploy-'+s+'-'+q);
   root.querySelectorAll('.deploy-i').forEach(t=>t.addEventListener('input',commit));
 }
 
+/* ミッションステートメント：MVVから自動生成（編集可・入力欄は汎用textareaハンドラで保存） */
+function missionDraft(cfg){
+  const get=k=>{ const src=cfg.sources.find(x=>x.key===k); return src?ans(src.step,src.id).trim():''; };
+  const m=get('mission'), v=get('value'), vi=get('vision'); const parts=[];
+  if(v) parts.push('「'+v+'」という価値を届け');
+  if(m) parts.push('「'+m+'」を使命とし');
+  if(vi) parts.push('「'+vi+'」の実現を目指し');
+  return parts.length?'私たちは、'+parts.join('、')+'ます。':'';
+}
+function missionHTML(s,q){ const cfg=qDef(s,q);
+  const refs=cfg.sources.map(src=>{ const v=ans(src.step,src.id).trim(); return `<div class="mv-row"><span class="mv-k">${src.label}</span><span class="mv-v${v?'':' empty'}">${v?esc(v):'（未入力）'}</span></div>`; }).join('');
+  return `<div class="mission" id="mis-${s}-${q}">
+    <div class="mv-box"><div class="mv-h">参照：これまでのMVV</div>${refs}</div>
+    <button type="button" class="btn outline mv-gen" onclick="missionGen(${s},'${q}')">🔄 ミッション文を自動生成</button>
+    <textarea data-s="${s}" data-q="${q}" placeholder="自動生成された一文を編集できます…">${esc(ans(s,q))}</textarea>
+  </div>`;
+}
+function missionApply(s,q,draft,notify){ const ta=document.querySelector(`#stepBody textarea[data-s="${s}"][data-q="${q}"]`); if(ta) ta.value=draft;
+  setAns(s,q,draft); updateQScore(s,q); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),400); if(notify) sfxPop(); }
+function missionGen(s,q){ const draft=missionDraft(qDef(s,q));
+  if(!draft){ toast('先にミッション(Why)・ビジョン・提供価値(What)を入力してください'); return; }
+  missionApply(s,q,draft,true); }
+function missionInit(s,q){ if(ans(s,q).trim()) return; const draft=missionDraft(qDef(s,q)); if(draft) missionApply(s,q,draft,false); }
+
+/* 起承転結ストーリー設問 */
+function story4HTML(s,q){ const cfg=qDef(s,q);
+  return `<div class="story4" id="st4-${s}-${q}">`+cfg.parts.map(p=>{
+    const opts='<option value="">選択してください</option>'+p.options.map(o=>`<option>${o}</option>`).join('');
+    return `<div class="st4-row"><div class="st4-h"><span class="st4-k">${p.label}</span><span class="st4-sub">${p.sub}</span></div><select class="st4-i" data-k="${p.key}">${opts}</select></div>`;
+  }).join('')+`</div>`;
+}
+function story4Init(s,q){ const cfg=qDef(s,q); const root=document.getElementById('st4-'+s+'-'+q); if(!root) return;
+  const key=s+'_'+q; state.story4=state.story4||{}; const v=state.story4[key]||{};
+  root.querySelectorAll('.st4-i').forEach(sel=>{ sel.value=v[sel.dataset.k]||''; });
+  const commit=()=>{ const o={}, txt=[]; root.querySelectorAll('.st4-i').forEach(sel=>{ o[sel.dataset.k]=sel.value; }); state.story4[key]=o;
+    cfg.parts.forEach(p=>{ if(o[p.key]) txt.push(p.label+'：'+o[p.key]); });
+    setAns(s,q,txt.join(' ／ ')); updateQScore(s,q); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),400); };
+  root.querySelectorAll('.st4-i').forEach(sel=>sel.addEventListener('change',commit));
+}
+
 function renderStep(){
   const s=STEPS[cur], ph=PHASES.find(p=>p.key===s.phase), comment=(state.comments&&state.comments[s.no])||'';
   document.getElementById('stepBody').innerHTML=`
@@ -872,6 +927,8 @@ function renderStep(){
       if(q.type==='refnote'){ return `<div class="qblock">${head}${refnoteHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='rows'){ return `<div class="qblock">${head}${rowsHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='deploy'){ return `<div class="qblock">${head}${deployHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='mission'){ return `<div class="qblock">${head}${missionHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='story4'){ return `<div class="qblock">${head}${story4HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='seg3'){ return `<div class="qblock">${head}${seg3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='grid3'){ return `<div class="qblock">${head}${grid3HTML(s.no,q.id,q.cols)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
@@ -897,7 +954,7 @@ function renderStep(){
   document.querySelectorAll('#stepBody textarea[data-q]').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); refreshDependents(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
-  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='posmap3') posmap3Init(s.no,q.id); if(q.type==='logline') loglineInit(s.no,q.id); if(q.type==='rows') rowsInit(s.no,q.id); if(q.type==='deploy') deployInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
+  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='posmap3') posmap3Init(s.no,q.id); if(q.type==='logline') loglineInit(s.no,q.id); if(q.type==='rows') rowsInit(s.no,q.id); if(q.type==='deploy') deployInit(s.no,q.id); if(q.type==='mission') missionInit(s.no,q.id); if(q.type==='story4') story4Init(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
 }
 function pick(el,s,q,text){
