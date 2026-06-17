@@ -311,6 +311,14 @@
     .doc{padding-left:clamp(16px,5%,24px);padding-right:clamp(16px,5%,24px)}
     .doccard{padding:26px}
     .bar .bt{display:none}
+    header.bar .in{gap:8px;padding:0 12px}
+    .bar .acts{flex-wrap:nowrap;gap:7px}
+    .bar .acts .btn{padding:8px 11px;font-size:12.5px}
+  }
+  @media(max-width:560px){
+    .bar .acts .btxt{display:none}
+    .brand img{height:32px}
+    .bar .acts .btn{padding:8px 10px}
   }
 </style>
 </head>
@@ -325,7 +333,7 @@
     <div class="spacer"></div>
     <div class="acts">
       <button class="btn outline" id="soundBtn" onclick="toggleSound()" title="効果音 ON/OFF" style="padding:9px 12px">🔊</button>
-      <button class="btn outline" onclick="resumeSaved()">📄 保存中のヒアリングシート</button>
+      <button class="btn outline" onclick="resumeSaved()">📄 <span class="btxt">保存中のヒアリングシート</span></button>
       <button class="btn solid" onclick="openSubmit()">☁️ 送信</button>
     </div>
   </div>
