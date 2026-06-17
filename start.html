@@ -138,6 +138,15 @@
   /* グループ選択（カテゴリ別キーワード） */
   .grp{margin-bottom:14px}
   .grp-h{font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.04em;margin:0 0 8px;padding-left:10px;border-left:3px solid var(--gold)}
+  /* 3行×複数項目の入力グリッド */
+  .grid3{margin-top:4px}
+  .g3-row{background:var(--bg);border-radius:12px;padding:13px 14px;margin-bottom:12px}
+  .g3-h{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .g3-h .g3-n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--serif);font-size:13px;display:grid;place-items:center}
+  .g3-h b{font-size:13px;color:var(--navy)}
+  .g3-i{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-family:inherit;font-size:14px;background:#fff;margin-bottom:8px;min-height:40px;resize:vertical;line-height:1.6}
+  .g3-i:last-child{margin-bottom:0}
+  .g3-i:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,106,44,.12)}
   /* 3セグメント（デモ×ジオ×サイコ） */
   .seg3{margin-top:4px}
   .seg-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;background:var(--bg);border-radius:11px;padding:10px 12px}
@@ -315,7 +324,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=9"></script>
+<script src="shisei-data.js?v=10"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -535,6 +544,27 @@ function refreshDependents(s,changedQid){
   step.questions.forEach(q=>{ if(q.type==='fromq'&&q.source===changedQid){ const el=document.getElementById('fromq-'+s+'-'+q.id); if(el) el.innerHTML=fromqChips(s,q); } });
 }
 
+/* 3行×複数項目の入力グリッド設問 */
+function grid3HTML(s,q,cols){
+  return `<div class="grid3" id="grid3-${s}-${q}">`+[0,1,2].map(r=>
+    `<div class="g3-row"><div class="g3-h"><span class="g3-n">${'①②③'[r]}</span><b>${r+1}つ目の役割</b></div>`
+    + cols.map((c,ci)=>`<textarea class="g3-i" rows="1" data-r="${r}" data-c="${ci}" placeholder="${c}"></textarea>`).join('')
+    + `</div>`).join('')+`</div>`;
+}
+function grid3Init(s,q,cols){
+  const root=document.getElementById('grid3-'+s+'-'+q); if(!root) return;
+  const key=s+'_'+q; state.grid3=state.grid3||{}; const rows=state.grid3[key]||[];
+  root.querySelectorAll('.g3-i').forEach(t=>{ const r=+t.dataset.r,c=+t.dataset.c; t.value=(rows[r]&&rows[r][c])||''; });
+  const short=c=>c.replace(/（.*?）/,'');
+  const commit=()=>{ const out=[[],[],[]];
+    root.querySelectorAll('.g3-i').forEach(t=>{ out[+t.dataset.r][+t.dataset.c]=t.value; });
+    state.grid3[key]=out;
+    const text=out.map((row,i)=>{ const parts=cols.map((c,ci)=>row[ci]&&row[ci].trim()?short(c)+'：'+row[ci].trim():null).filter(Boolean); return parts.length?'①②③'[i]+' '+parts.join(' ／ '):null; }).filter(Boolean).join('\n');
+    setAns(s,q,text); updateQScore(s,q); renderPills(); renderGarden();
+    clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),500); };
+  root.querySelectorAll('.g3-i').forEach(t=>t.addEventListener('input',commit));
+}
+
 /* 3セグメント設問（3行 × デモ×ジオ×サイコ） */
 const SEG_DEMO=['20代女性','30代女性','40代以上女性','20代男性','30代男性','40代以上男性','学生','子育て世帯','共働き世帯','シニア層','単身者','高所得層','中間所得層','経営者・管理職','専門職','主婦・主夫'];
 const SEG_GEO=['都市部','地方都市','郊外','首都圏','関西圏','地域密着（ローカル）','全国','オンライン中心','海外・インバウンド'];
@@ -636,6 +666,7 @@ function renderStep(){
       if(q.type==='posmap'){ return `<div class="qblock">${head}${posmapHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='seg3'){ return `<div class="qblock">${head}${seg3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='grid3'){ return `<div class="qblock">${head}${grid3HTML(s.no,q.id,q.cols)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='fromq'){ return `<div class="qblock">${head}<div class="fromq" id="fromq-${s.no}-${q.id}">${fromqChips(s.no,q)}</div>
         <textarea data-s="${s.no}" data-q="${q.id}" placeholder="選択がここに入ります（自由に追記・編集もOK）">${esc(val)}</textarea>
         <div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
@@ -657,7 +688,7 @@ function renderStep(){
   document.querySelectorAll('#stepBody textarea').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); refreshDependents(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
-  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); updateQScore(s.no,q.id); });
+  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
 }
 function pick(el,s,q,text){
