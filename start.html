@@ -138,6 +138,12 @@
   /* グループ選択（カテゴリ別キーワード） */
   .grp{margin-bottom:14px}
   .grp-h{font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.04em;margin:0 0 8px;padding-left:10px;border-left:3px solid var(--gold)}
+  /* 3セグメント（デモ×ジオ×サイコ） */
+  .seg3{margin-top:4px}
+  .seg-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;background:var(--bg);border-radius:11px;padding:10px 12px}
+  .seg-n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--serif);font-size:13px;display:grid;place-items:center}
+  .seg-row select{flex:1;min-width:118px;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-family:inherit;font-size:13.5px;background:#fff;cursor:pointer}
+  .seg-x{color:var(--soft);font-weight:700;font-size:13px}
   /* A・B・C 3行入力 */
   .abc{margin-top:4px}
   .abc-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
@@ -309,7 +315,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=7"></script>
+<script src="shisei-data.js?v=8"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -529,6 +535,26 @@ function refreshDependents(s,changedQid){
   step.questions.forEach(q=>{ if(q.type==='fromq'&&q.source===changedQid){ const el=document.getElementById('fromq-'+s+'-'+q.id); if(el) el.innerHTML=fromqChips(s,q); } });
 }
 
+/* 3セグメント設問（3行 × デモ×ジオ×サイコ） */
+const SEG_DEMO=['20代女性','30代女性','40代以上女性','20代男性','30代男性','40代以上男性','学生','子育て世帯','共働き世帯','シニア層','単身者','高所得層','中間所得層','経営者・管理職','専門職','主婦・主夫'];
+const SEG_GEO=['都市部','地方都市','郊外','首都圏','関西圏','地域密着（ローカル）','全国','オンライン中心','海外・インバウンド'];
+const SEG_PSY=['健康志向','品質重視','コスパ重視','トレンド志向','安定志向','こだわり派','時短・利便性重視','環境・社会志向','自己投資型','体験重視','ブランド志向','保守的','革新的'];
+function seg3HTML(s,q){
+  const ol=(items,ph)=>`<option value="">${ph}</option>`+items.map(o=>`<option>${o}</option>`).join('');
+  return `<div class="seg3" id="seg3-${s}-${q}">`+[0,1,2].map(r=>`<div class="seg-row"><span class="seg-n">${'①②③'[r]}</span><select class="seg-a" data-r="${r}">${ol(SEG_DEMO,'属性（デモ）')}</select><span class="seg-x">×</span><select class="seg-b" data-r="${r}">${ol(SEG_GEO,'地域（ジオ）')}</select><span class="seg-x">×</span><select class="seg-c" data-r="${r}">${ol(SEG_PSY,'価値観（サイコ）')}</select></div>`).join('')+`</div>`;
+}
+function seg3Init(s,q){
+  const root=document.getElementById('seg3-'+s+'-'+q); if(!root) return;
+  const key=s+'_'+q; state.seg3=state.seg3||{}; const rows=state.seg3[key]||[{},{},{}];
+  root.querySelectorAll('.seg-row').forEach((row,r)=>{ const v=rows[r]||{}; row.querySelector('.seg-a').value=v.a||''; row.querySelector('.seg-b').value=v.b||''; row.querySelector('.seg-c').value=v.c||''; });
+  const commit=()=>{ const out=[]; const txt=[];
+    root.querySelectorAll('.seg-row').forEach((row,r)=>{ const a=row.querySelector('.seg-a').value,b=row.querySelector('.seg-b').value,c=row.querySelector('.seg-c').value; out[r]={a,b,c};
+      const p=[a,b,c].filter(Boolean); if(p.length) txt.push('①②③'[r]+p.join('×')); });
+    state.seg3[key]=out; setAns(s,q,txt.join(' ／ ')); updateQScore(s,q); renderPills(); renderGarden();
+    clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),400); };
+  root.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',commit));
+}
+
 /* A・B・C 3行入力設問 */
 function abcHTML(s,q){
   return `<div class="abc" id="abc-${s}-${q}">`+['A','B','C'].map(k=>
@@ -609,6 +635,7 @@ function renderStep(){
       const head=`<label><span class="qno">Q${qStart(s.no)+i+1}.</span>${q.label}</label><div class="hint">${q.hint}</div>`;
       if(q.type==='posmap'){ return `<div class="qblock">${head}${posmapHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='seg3'){ return `<div class="qblock">${head}${seg3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='fromq'){ return `<div class="qblock">${head}<div class="fromq" id="fromq-${s.no}-${q.id}">${fromqChips(s.no,q)}</div>
         <textarea data-s="${s.no}" data-q="${q.id}" placeholder="選択がここに入ります（自由に追記・編集もOK）">${esc(val)}</textarea>
         <div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
@@ -630,7 +657,7 @@ function renderStep(){
   document.querySelectorAll('#stepBody textarea').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); refreshDependents(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
-  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); updateQScore(s.no,q.id); });
+  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
 }
 function pick(el,s,q,text){
