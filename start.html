@@ -212,6 +212,16 @@
   .ll-flow select:focus,.ll-flow input:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,106,44,.12)}
   .ll-fx{color:var(--soft);font-weight:600}
   .ll-read{margin:16px 0 0;padding:14px 16px;background:var(--bg);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;font-family:var(--serif);font-size:14.5px;line-height:1.85;color:var(--navy);text-align:left;max-width:none}
+  /* 参照ノート（前STEP回答の表示）・名前付き複数行・エクイティ展開 */
+  .refnote-box{background:var(--bg);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:12px 15px;margin-bottom:12px}
+  .refnote-h{font-size:12px;font-weight:700;color:var(--soft);margin-bottom:4px}
+  .refnote-box p{font-family:var(--serif);font-size:14px;line-height:1.8;color:var(--navy);margin:0}
+  .rows3,.deploy{margin-top:4px}
+  .rows3-row,.deploy-row{margin-bottom:12px}
+  .rows3-l,.deploy-l{display:block;font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:5px}
+  .rows3-i,.deploy-i{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-family:inherit;font-size:14px;background:#fff;min-height:42px;resize:vertical;line-height:1.6}
+  .rows3-i:focus,.deploy-i:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,106,44,.12)}
+  .deploy-l{color:var(--gold)}
   .outputnote{margin-top:8px;padding:14px 18px;border:1px dashed var(--line);border-radius:11px;font-size:13.5px;color:var(--muted);background:var(--bg)}
   .outputnote b{color:var(--navy)}
   .foot{display:flex;justify-content:space-between;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
@@ -360,7 +370,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=17"></script>
+<script src="shisei-data.js?v=18"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -810,6 +820,41 @@ function loglineInit(s,q){
   if(v.a||v.b||v.i) commit();
 }
 
+/* 参照ノート：前STEPの回答を表示してから入力する設問（入力欄は汎用textareaハンドラで保存） */
+function refnoteHTML(s,q){ const cfg=qDef(s,q); const refv=ans(cfg.refStep,cfg.refId).trim();
+  const box = refv
+    ? `<div class="refnote-box"><div class="refnote-h">📖 ${cfg.refTitle}</div><p>${esc(refv)}</p></div>`
+    : `<div class="fromq-empty">先に STEP${cfg.refStep} の「${cfg.refTitle}」を入力すると、ここに表示されます。</div>`;
+  return `${box}<textarea data-s="${s}" data-q="${q}" placeholder="${cfg.placeholder||'ここに入力…'}">${esc(ans(s,q))}</textarea>`;
+}
+
+/* 名前付き複数行入力設問 */
+function rowsHTML(s,q){ const cfg=qDef(s,q);
+  return `<div class="rows3" id="rows-${s}-${q}">`+cfg.rows.map(r=>`<div class="rows3-row"><label class="rows3-l">${r.label}</label><textarea class="rows3-i" rows="1" data-k="${r.key}" placeholder="${r.placeholder||r.label+'を入力…'}"></textarea></div>`).join('')+`</div>`;
+}
+function rowsInit(s,q){ const cfg=qDef(s,q); const root=document.getElementById('rows-'+s+'-'+q); if(!root) return;
+  const key=s+'_'+q; state.rows=state.rows||{}; const v=state.rows[key]||{};
+  root.querySelectorAll('.rows3-i').forEach(t=>{ t.value=v[t.dataset.k]||''; });
+  const commit=()=>{ const o={}; root.querySelectorAll('.rows3-i').forEach(t=>{ o[t.dataset.k]=t.value; }); state.rows[key]=o;
+    const text=cfg.rows.map(r=>o[r.key]&&o[r.key].trim()?r.label+'：'+o[r.key].trim():null).filter(Boolean).join(' ／ ');
+    setAns(s,q,text); updateQScore(s,q); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),500); };
+  root.querySelectorAll('.rows3-i').forEach(t=>t.addEventListener('input',commit));
+}
+
+/* ブランド・エクイティ展開：過去設問で選んだ各項目に入力欄を並べる */
+function deployItems(cfg){ return [...new Set(ans(cfg.sourceStep,cfg.sourceId).split(/[、,\n]/).map(x=>x.trim()).filter(Boolean))]; }
+function deployHTML(s,q){ const cfg=qDef(s,q); const items=deployItems(cfg);
+  if(!items.length) return `<div class="fromq-empty" id="deploy-${s}-${q}">先に Q19 でブランド・エクイティを選ぶと、ここに各項目の入力欄が表示されます。</div>`;
+  const key=s+'_'+q; const v=(state.deploy&&state.deploy[key])||{};
+  return `<div class="deploy" id="deploy-${s}-${q}">`+items.map(it=>`<div class="deploy-row"><label class="deploy-l">${esc(it)}</label><textarea class="deploy-i" rows="1" data-it="${esc(it)}" placeholder="「${esc(it)}」を商品・広告・店舗・アフターでどう落とすか…">${esc(v[it]||'')}</textarea></div>`).join('')+`</div>`;
+}
+function deployInit(s,q){ const root=document.getElementById('deploy-'+s+'-'+q); if(!root||!root.classList.contains('deploy')) return;
+  const key=s+'_'+q; state.deploy=state.deploy||{};
+  const commit=()=>{ const o={}, txt=[]; root.querySelectorAll('.deploy-i').forEach(t=>{ const it=t.dataset.it; o[it]=t.value; if(t.value.trim()) txt.push(it+'：'+t.value.trim()); }); state.deploy[key]=o;
+    setAns(s,q,txt.join('\n')); updateQScore(s,q); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>save(false),500); };
+  root.querySelectorAll('.deploy-i').forEach(t=>t.addEventListener('input',commit));
+}
+
 function renderStep(){
   const s=STEPS[cur], ph=PHASES.find(p=>p.key===s.phase), comment=(state.comments&&state.comments[s.no])||'';
   document.getElementById('stepBody').innerHTML=`
@@ -824,6 +869,9 @@ function renderStep(){
       if(q.type==='posmap'){ return `<div class="qblock">${head}${posmapHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='posmap3'){ return `<div class="qblock">${head}${posmap3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='logline'){ return `<div class="qblock">${head}${loglineHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='refnote'){ return `<div class="qblock">${head}${refnoteHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='rows'){ return `<div class="qblock">${head}${rowsHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='deploy'){ return `<div class="qblock">${head}${deployHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='seg3'){ return `<div class="qblock">${head}${seg3HTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='grid3'){ return `<div class="qblock">${head}${grid3HTML(s.no,q.id,q.cols)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
@@ -846,10 +894,10 @@ function renderStep(){
       <button class="btn outline" ${cur===0?'disabled':''} onclick="prevStep()">← 前へ</button>
       ${cur===STEPS.length-1?`<button class="btn solid" onclick="showDoc()">戦略書を見る 📄</button>`:`<button class="btn dark" onclick="nextStep()">保存して次へ →</button>`}
     </div>`;
-  document.querySelectorAll('#stepBody textarea').forEach(t=>{
+  document.querySelectorAll('#stepBody textarea[data-q]').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); refreshDependents(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
-  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='posmap3') posmap3Init(s.no,q.id); if(q.type==='logline') loglineInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
+  s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='posmap3') posmap3Init(s.no,q.id); if(q.type==='logline') loglineInit(s.no,q.id); if(q.type==='rows') rowsInit(s.no,q.id); if(q.type==='deploy') deployInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
 }
 function pick(el,s,q,text){
