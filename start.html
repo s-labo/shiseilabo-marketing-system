@@ -133,6 +133,8 @@
   .qscore .dots i.on{background:var(--gold)}
   .qscore .lab{font-size:12.5px;color:var(--good);font-weight:700}
   .qscore .lab b{color:var(--gold)}
+  /* Q19連動の選択 */
+  .fromq-empty{font-size:13px;color:var(--soft);background:var(--bg);border:1px dashed var(--line);border-radius:11px;padding:14px 16px;margin-bottom:10px}
   /* グループ選択（カテゴリ別キーワード） */
   .grp{margin-bottom:14px}
   .grp-h{font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.04em;margin:0 0 8px;padding-left:10px;border-left:3px solid var(--gold)}
@@ -307,7 +309,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=6"></script>
+<script src="shisei-data.js?v=7"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -515,6 +517,18 @@ function goStep(i){ save(false); cur=Math.max(0,Math.min(STEPS.length-1,i)); ren
 function nextStep(){ save(false); checkStepComplete(STEPS[cur].no); if(cur<STEPS.length-1) goStep(cur+1); else showDoc(); }
 function prevStep(){ goStep(cur-1); }
 
+/* 他設問の選択結果を選択肢にする設問（例：Q22←Q19） */
+function fromqChips(s,q){
+  const items=[...new Set(ans(s,q.source).split(/[、,\n]/).map(x=>x.trim()).filter(Boolean))];
+  if(!items.length) return '<div class="fromq-empty">先に Q19 でブランド・エクイティを選ぶと、ここに選択肢が表示されます。</div>';
+  const sel=ans(s,q.id).split(/[、,\n]/).map(x=>x.trim()).filter(Boolean);
+  return '<div class="opts">'+items.map(o=>`<button type="button" class="opt${sel.includes(o)?' on':''}" onclick="pick(this,${s},'${q.id}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join('')+'</div>';
+}
+function refreshDependents(s,changedQid){
+  const step=STEPS.find(x=>x.no===s); if(!step) return;
+  step.questions.forEach(q=>{ if(q.type==='fromq'&&q.source===changedQid){ const el=document.getElementById('fromq-'+s+'-'+q.id); if(el) el.innerHTML=fromqChips(s,q); } });
+}
+
 /* A・B・C 3行入力設問 */
 function abcHTML(s,q){
   return `<div class="abc" id="abc-${s}-${q}">`+['A','B','C'].map(k=>
@@ -595,6 +609,9 @@ function renderStep(){
       const head=`<label><span class="qno">Q${qStart(s.no)+i+1}.</span>${q.label}</label><div class="hint">${q.hint}</div>`;
       if(q.type==='posmap'){ return `<div class="qblock">${head}${posmapHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='abc'){ return `<div class="qblock">${head}${abcHTML(s.no,q.id)}<div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
+      if(q.type==='fromq'){ return `<div class="qblock">${head}<div class="fromq" id="fromq-${s.no}-${q.id}">${fromqChips(s.no,q)}</div>
+        <textarea data-s="${s.no}" data-q="${q.id}" placeholder="選択がここに入ります（自由に追記・編集もOK）">${esc(val)}</textarea>
+        <div class="qscore" id="qs-${s.no}-${q.id}"></div></div>`; }
       if(q.type==='grouped'){ const grps=q.groups.map(g=>`<div class="grp"><div class="grp-h">${g.name}</div><div class="opts">${g.items.map(o=>`<button type="button" class="opt${sel.includes(o)?' on':''}" onclick="pick(this,${s.no},'${q.id}','${o.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div></div>`).join('');
         return `<div class="qblock">${head}${grps}
           <textarea data-s="${s.no}" data-q="${q.id}" placeholder="選択がここに入ります（自由に追記・編集もOK）">${esc(val)}</textarea>
@@ -611,7 +628,7 @@ function renderStep(){
       ${cur===STEPS.length-1?`<button class="btn solid" onclick="showDoc()">戦略書を見る 📄</button>`:`<button class="btn dark" onclick="nextStep()">保存して次へ →</button>`}
     </div>`;
   document.querySelectorAll('#stepBody textarea').forEach(t=>{
-    t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
+    t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); refreshDependents(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
   });
   s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
@@ -620,7 +637,7 @@ function pick(el,s,q,text){
   const ta=document.querySelector(`#stepBody textarea[data-s="${s}"][data-q="${q}"]`); if(!ta) return;
   let parts=ta.value.split(/[、,\n]/).map(x=>x.trim()).filter(Boolean); const i=parts.indexOf(text);
   if(i>=0){parts.splice(i,1);el.classList.remove('on');}else{parts.push(text);el.classList.add('on');}
-  ta.value=parts.join('、'); setAns(s,q,ta.value); sfxPop(); updateQScore(s,q); renderPills(); renderGarden();
+  ta.value=parts.join('、'); setAns(s,q,ta.value); sfxPop(); updateQScore(s,q); refreshDependents(s,q); renderPills(); renderGarden();
   clearTimeout(window._sv); window._sv=setTimeout(()=>{save(false);checkStepComplete(s);},400);
 }
 function updateQScore(s,q){
