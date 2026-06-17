@@ -370,7 +370,7 @@
 </div></div>
 <div class="toast" id="toast"></div>
 
-<script src="shisei-data.js?v=18"></script>
+<script src="shisei-data.js?v=19"></script>
 <script>
 /* ============================================================
    状態（index.html と同じ localStorage を共有）
@@ -844,7 +844,7 @@ function rowsInit(s,q){ const cfg=qDef(s,q); const root=document.getElementById(
 /* ブランド・エクイティ展開：過去設問で選んだ各項目に入力欄を並べる */
 function deployItems(cfg){ return [...new Set(ans(cfg.sourceStep,cfg.sourceId).split(/[、,\n]/).map(x=>x.trim()).filter(Boolean))]; }
 function deployHTML(s,q){ const cfg=qDef(s,q); const items=deployItems(cfg);
-  if(!items.length) return `<div class="fromq-empty" id="deploy-${s}-${q}">先に Q19 でブランド・エクイティを選ぶと、ここに各項目の入力欄が表示されます。</div>`;
+  if(!items.length) return `<div class="fromq-empty" id="deploy-${s}-${q}">先に Q22 で戦略的ブランドエクイティを選ぶと、ここに各項目の入力欄が表示されます。</div>`;
   const key=s+'_'+q; const v=(state.deploy&&state.deploy[key])||{};
   return `<div class="deploy" id="deploy-${s}-${q}">`+items.map(it=>`<div class="deploy-row"><label class="deploy-l">${esc(it)}</label><textarea class="deploy-i" rows="1" data-it="${esc(it)}" placeholder="「${esc(it)}」を商品・広告・店舗・アフターでどう落とすか…">${esc(v[it]||'')}</textarea></div>`).join('')+`</div>`;
 }
