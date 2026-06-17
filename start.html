@@ -240,6 +240,13 @@
   .fillnote{margin:0 0 16px;padding:11px 14px;background:var(--bg);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;font-size:12.5px;line-height:1.75;color:var(--navy)}
   .fillnote b{color:var(--gold)}
   .fillnote b.hl{color:var(--navy)}
+  /* 月額契約の目安 */
+  .feebox{margin-top:14px;padding:14px 15px;border-radius:13px;background:linear-gradient(135deg,var(--navy),#1d3354);color:#fff;text-align:center;box-shadow:0 6px 18px rgba(20,35,58,.18)}
+  .feebox .fl{font-size:10.5px;letter-spacing:.12em;color:#cfd6e6;font-weight:700}
+  .feebox .fv{font-size:23px;font-weight:800;font-family:var(--serif);margin-top:5px;letter-spacing:.02em}
+  .feebox .fn{font-size:10.5px;color:#aeb9d0;margin-top:6px;line-height:1.6}
+  .feebox.empty{background:var(--bg);color:var(--muted);box-shadow:none;border:1px dashed var(--line)}
+  .feebox.empty .fv{color:var(--navy);font-size:13px;font-weight:700;font-family:inherit}
   .outputnote{margin-top:8px;padding:14px 18px;border:1px dashed var(--line);border-radius:11px;font-size:13.5px;color:var(--muted);background:var(--bg)}
   .outputnote b{color:var(--navy)}
   .foot{display:flex;justify-content:space-between;gap:12px;margin-top:32px;padding-top:24px;border-top:1px solid var(--line)}
@@ -254,6 +261,11 @@
   .docscore .g{font-family:var(--serif);font-size:38px;font-weight:700;color:var(--gold);width:48px;text-align:center;line-height:1}
   .docscore .sc{font-size:13px;color:var(--muted);line-height:1.6}
   .docscore .sc b{color:var(--navy);font-size:15px}
+  .docfee{display:flex;flex-direction:column;align-items:center;gap:3px;margin:16px auto 0;max-width:420px;padding:14px 22px;border-radius:12px;background:linear-gradient(135deg,var(--navy),#1d3354);color:#fff}
+  .docfee .dl{font-size:11px;letter-spacing:.1em;color:#cfd6e6;font-weight:700}
+  .docfee .dv{font-family:var(--serif);font-size:26px;font-weight:800}
+  .docfee .dn{font-size:11px;color:#aeb9d0}
+  .docfee.empty{background:var(--bg);color:var(--muted);font-size:13px;font-weight:700}
   .docstep{margin-bottom:26px;padding-bottom:22px;border-bottom:1px dashed var(--line)}
   .docstep h3{font-size:17px;color:var(--navy);display:flex;gap:10px;align-items:baseline}
   .docstep h3 .no{color:var(--gold);font-family:var(--serif);font-size:15px}
@@ -333,6 +345,7 @@
             <div class="enc" id="gardenEnc">最初の問いに答えると、庭に芽が出ます。</div>
             <div class="grew" id="grewMsg"></div>
           </div>
+          <div class="feebox empty" id="feeBox"><div class="fv">入力を進めると、月額契約の目安が表示されます</div></div>
         </div>
       </aside>
     </div>
@@ -413,6 +426,17 @@ function totalScore(){ let s=0; STEPS.forEach(st=>{ const a=state.answers[st.no]
 function maxScore(){ return totalQuestions()*12; }
 function scorePct(){ return Math.round(totalScore()/maxScore()*100); }
 function gradeFor(p){ return p>=90?'S':p>=75?'A':p>=60?'B':p>=40?'C':'D'; }
+/* 完成度に応じた月額契約の目安（3〜6ヶ月契約）。完成度が高いほどお手頃に。10%未満はnull */
+function monthlyFee(p){
+  if(p<10) return null;
+  if(p<=20) return '50万円';
+  if(p<=30) return '40万円';
+  if(p<=40) return '35万円';
+  if(p<=50) return '25万円';
+  if(p<=70) return '20万円';
+  if(p<=90) return '15万円';
+  return '5万円〜10万円';
+}
 function stepDone(no){ const a=state.answers[no]; return a&&Object.values(a).some(v=>v&&v.trim()); }
 function encourageMsg(p){ if(p<=0)return 'さあ、最初の問いから。';if(p<25)return 'いいスタートです。';if(p<50)return '順調に育っています。';if(p<75)return '戦略の輪郭が見えてきました。';if(p<100)return 'あと少しで完成です！';return '完成度100%。庭が満開です！'; }
 
@@ -572,6 +596,10 @@ function renderGarden(){
   document.getElementById('stageName').textContent=full?'満開の庭':st.name;
   document.getElementById('stageLv').textContent=full?'STAGE ★':st.lv;
   document.getElementById('gardenEnc').textContent=full?'庭が満開になりました！':encourageMsg(p);
+  const fb=document.getElementById('feeBox');
+  if(fb){ const fee=monthlyFee(p);
+    if(fee){ fb.className='feebox'; fb.innerHTML='<div class="fl">月額契約の目安（3〜6ヶ月契約）</div><div class="fv">'+fee+'</div><div class="fn">完成度 '+p+'%・シセイラボ伴走／完成度が高いほどお手頃になります</div>'; }
+    else { fb.className='feebox empty'; fb.innerHTML='<div class="fv">完成度10%以上で、月額契約の目安が表示されます</div>'; } }
   applySky(p);
   if(grown>prevGrown){
     sfxGrow();
@@ -995,6 +1023,7 @@ function renderDoc(){
     <div class="dochead"><div class="t">ブランド創造ヒアリングシート</div>
       <div class="s">SHISEILABO 12STEP METHOD　|　作成日：${d}</div>
       <div class="docscore"><span class="g">${gradeFor(pct)}</span><span class="sc"><b>完成度スコア ${pct}%</b>（${totalScore()} / ${maxScore()} pt）<br>${encourageMsg(pct)}</span></div>
+      ${monthlyFee(pct)?`<div class="docfee"><span class="dl">月額契約の目安（3〜6ヶ月契約）</span><span class="dv">${monthlyFee(pct)}</span><span class="dn">完成度 ${pct}%・シセイラボ伴走／完成度が高いほどお手頃になります</span></div>`:`<div class="docfee empty">完成度10%以上で、月額契約の目安が表示されます</div>`}
     </div>
     ${PHASES.map(ph=>STEPS.filter(s=>s.phase===ph.key).map(s=>{
       const a=state.answers[s.no]||{}, cm=(state.comments&&state.comments[s.no])||'';
@@ -1008,6 +1037,7 @@ function renderDoc(){
 function buildDocText(){
   const pct=scorePct(); let out='【ブランド創造ヒアリングシート】SHISEILABO 12STEP METHOD\n';
   out+='完成度スコア '+pct+'%（'+totalScore()+' / '+maxScore()+' pt）／グレード '+gradeFor(pct)+'\n';
+  const fee=monthlyFee(pct); out+='月額契約の目安（3〜6ヶ月契約）：'+(fee||'完成度10%以上で表示')+'\n';
   PHASES.forEach(ph=>STEPS.filter(s=>s.phase===ph.key).forEach(s=>{
     const a=state.answers[s.no]||{};
     out+='\n■ STEP '+s.no+'　'+s.title+'\n';
