@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2B6W31KQX5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2B6W31KQX5');
+  function gaEvent(name, params){ try{ if(typeof gtag==='function') gtag('event', name, params||{}); }catch(e){} }
+</script>
 <title>ヒアリングシートを作成｜シセイラボ 12STEPメソッド</title>
 <meta name="description" content="書けるところだけ入力すればOK。12の問いに答えるごとにブランドの庭が育ち、ヒアリングシートが完成。シセイラボに共有すれば、あなたの会社のブランドを創造します。" />
 <link rel="icon" href="favicon.ico" sizes="any" />
@@ -413,6 +422,10 @@
    ============================================================ */
 const LS_KEY='shiseilabo_strategy_v1';
 let state=load(), cur=0, prevGrown=0;
+/* GA4 計測用 */
+const _gaMilestones=new Set(); let _gaBegan=false, _gaLastStep=-1;
+function gaProgress(p){ if(!_gaBegan && answeredCount()>0){ _gaBegan=true; gaEvent('begin_sheet',{}); }
+  [25,50,75].forEach(m=>{ if(p>=m && !_gaMilestones.has(m)){ _gaMilestones.add(m); gaEvent('progress',{percent:m}); } }); }
 function load(){ try{ const d=JSON.parse(localStorage.getItem(LS_KEY)); return d&&d.answers?d:{answers:{},comments:{},cloud:null,updated:null}; }catch(e){ return {answers:{},comments:{},cloud:null,updated:null}; } }
 function save(notify){ state.updated=new Date().toISOString(); state.lastStep=cur; localStorage.setItem(LS_KEY,JSON.stringify(state)); if(notify) toast('保存しました'); }
 function ans(s,q){ return (state.answers[s]&&state.answers[s][q])||''; }
@@ -584,12 +597,14 @@ function celebrate(){ if(_done100) return; _done100=true;
   set('skyT',s.top); set('skyM',s.mid); set('skyB',s.bot);
   const g=document.querySelector('.garden'); if(g){ g.classList.remove('dusk'); g.classList.add('petals'); }
   confetti(); sfxFanfare(); setTimeout(()=>document.getElementById('cbanner').classList.add('show'),420);
+  gaEvent('sheet_complete',{percent:scorePct()});
 }
 
 function renderGarden(){
   const host=document.getElementById('gardenSvg');
   if(!host.dataset.built){ host.innerHTML=gardenSVG(); host.dataset.built='1'; buildParticles(); }
   const c=answeredCount(), p=scorePct();
+  gaProgress(p);
   let grown=0;
   GROW.forEach((g,idx)=>{ const els=host.querySelectorAll('[data-i="'+idx+'"]'); const on=c>=g.th; els.forEach(e=>e.classList.toggle('in',on)); if(on) grown++; });
   document.getElementById('gbar').style.width=Math.round(grown/GROW.length*100)+'%';
@@ -992,6 +1007,7 @@ function renderStep(){
   });
   s.questions.forEach(q=>{ if(q.type==='posmap') posmapInit(s.no,q.id); if(q.type==='posmap3') posmap3Init(s.no,q.id); if(q.type==='logline') loglineInit(s.no,q.id); if(q.type==='rows') rowsInit(s.no,q.id); if(q.type==='deploy') deployInit(s.no,q.id); if(q.type==='mission') missionInit(s.no,q.id); if(q.type==='story4') story4Init(s.no,q.id); if(q.type==='abc') abcInit(s.no,q.id); if(q.type==='seg3') seg3Init(s.no,q.id); if(q.type==='grid3') grid3Init(s.no,q.id,q.cols); if(q.type==='metrics') metricsInit(s.no,q.id); updateQScore(s.no,q.id); });
   renderPills(); renderGarden();
+  if(_gaLastStep!==s.no){ _gaLastStep=s.no; gaEvent('step_view',{step_no:s.no,step_title:s.title}); }
 }
 function pick(el,s,q,text){
   const ta=document.querySelector(`#stepBody textarea[data-s="${s}"][data-q="${q}"]`); if(!ta) return;
@@ -1012,14 +1028,14 @@ const _celebrated=new Set();
 function checkStepComplete(no){
   const s=STEPS.find(x=>x.no===no), a=state.answers[no]||{};
   const all=s.questions.every(q=>(a[q.id]||'').trim());
-  if(all&&!_celebrated.has(no)){ _celebrated.add(no); const g=s.questions.reduce((p,q)=>p+qPoints(a[q.id]),0); sfxStep(); toast(`🎉 STEP${no} 完了！ +${g}pt 庭が育ちました`); }
+  if(all&&!_celebrated.has(no)){ _celebrated.add(no); const g=s.questions.reduce((p,q)=>p+qPoints(a[q.id]),0); sfxStep(); toast(`🎉 STEP${no} 完了！ +${g}pt 庭が育ちました`); gaEvent('step_complete',{step_no:no,step_title:s.title}); }
   else if(!all){ _celebrated.delete(no); }
 }
 
 /* ============================================================
    戦略書
    ============================================================ */
-function showDoc(){ document.getElementById('view-build').classList.add('hidden'); document.getElementById('view-doc').classList.remove('hidden'); renderDoc(); window.scrollTo(0,0); }
+function showDoc(){ document.getElementById('view-build').classList.add('hidden'); document.getElementById('view-doc').classList.remove('hidden'); renderDoc(); window.scrollTo(0,0); gaEvent('view_sheet',{percent:scorePct()}); }
 function showBuild(){ document.getElementById('view-doc').classList.add('hidden'); document.getElementById('view-build').classList.remove('hidden'); window.scrollTo(0,0); }
 function renderDoc(){
   const d=state.updated?new Date(state.updated).toLocaleDateString('ja-JP'):'—', pct=scorePct();
@@ -1066,6 +1082,7 @@ async function cloudSubmit(){
   btn.disabled=false; btn.textContent='送信する';
   if(!r.ok){ st.innerHTML=(r.status===0||r.status>=500)?'<span style="color:#c00">送信できませんでした（公開環境で有効）。</span>':'<span style="color:#c00">送信に失敗しました（'+((r.data&&r.data.error)||r.status)+'）</span>'; return; }
   state.cloud={id:r.data.id,token:r.data.token,company,email}; save(false);
+  gaEvent('submit_sheet',{percent:scorePct(), fee:monthlyFee(scorePct())||'(10%未満)', updated:!!r.data.updated, emailed:r.data.emailed!==false});
   if(r.data.emailed===false){ st.innerHTML='<span style="color:var(--good)">✓ 送信しました（保存完了）。</span><br><span style="color:#c80;font-size:12px">※メール送信は未完了'+(r.data.emailError?'：'+esc(r.data.emailError):'')+'</span>'; }
   else { st.innerHTML='<span style="color:var(--good)">✓ 送信しました。'+(email?'登録メールにも控えをお送りしました。':'')+'</span>'; }
   toast(r.data.updated?'内容を更新しました':'送信が完了しました'); setTimeout(closeSubmit,2200);

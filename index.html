@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2B6W31KQX5"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2B6W31KQX5');
+  function gaEvent(name, params){ try{ if(typeof gtag==='function') gtag('event', name, params||{}); }catch(e){} }
+</script>
 <title>シセイラボ｜ブランド創造ヒアリングシート（12STEPメソッド）</title>
 <meta name="description" content="12の問いに答えるだけで、自社の現状と狙いが整理されたヒアリングシートが完成。シセイラボに共有すれば、あなたの会社のブランドを創造します。" />
 <link rel="icon" href="favicon.ico" sizes="any" />
@@ -300,7 +309,7 @@
     <nav>
       <a href="#" onclick="go('home');return false;">メソッド</a>
       <button onclick="openGlossary()">用語集</button>
-      <button class="cta" onclick="location.href='start.html'">ヒアリングシートを作成する →</button>
+      <button class="cta" onclick="gaEvent('cta_click',{location:'header'});location.href='start.html'">ヒアリングシートを作成する →</button>
     </nav>
     <button class="btn ghost sm" onclick="go('advisor')">管理者</button>
   </div>
@@ -316,7 +325,7 @@
         <div class="rule"></div>
         <p class="lead">「何から伝えればいいか分からない」を、終わらせる。シセイラボが実務で磨いた12STEPメソッドに沿って問いに答えるだけで、自社の現状と狙いが整理された<b>ヒアリングシート</b>が完成。そのまま共有いただければ、シセイラボがあなたの会社のブランドを創造します。</p>
         <div class="btns">
-          <button class="btn primary" onclick="location.href='start.html'">ヒアリングシートを作成する</button>
+          <button class="btn primary" onclick="gaEvent('cta_click',{location:'hero'});location.href='start.html'">ヒアリングシートを作成する</button>
           <button class="btn ghost" onclick="document.getElementById('method').scrollIntoView()">メソッドを見る</button>
         </div>
         <div class="stats">
@@ -391,7 +400,7 @@
         <div class="rule"></div>
         <h2>あなたの会社のブランド創造を、今日はじめる。</h2>
         <p>登録不要・無料。途中保存できるので、ヒアリングシートを少しずつ作成できます。</p>
-        <button class="btn primary" onclick="location.href='start.html'">ヒアリングシートを作成する →</button>
+        <button class="btn primary" onclick="gaEvent('cta_click',{location:'footer'});location.href='start.html'">ヒアリングシートを作成する →</button>
       </div>
     </div>
   </section>
