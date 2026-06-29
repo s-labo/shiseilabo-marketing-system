@@ -12,8 +12,8 @@
   gtag('config', 'G-2B6W31KQX5');
   function gaEvent(name, params){ try{ if(typeof gtag==='function') gtag('event', name, params||{}); }catch(e){} }
 </script>
-<title>ヒアリングシートを作成｜シセイラボ 12STEPメソッド</title>
-<meta name="description" content="書けるところだけ入力すればOK。12の問いに答えるごとにブランドの庭が育ち、ヒアリングシートが完成。シセイラボに共有すれば、あなたの会社のブランドを創造します。" />
+<title>相談シートを作成｜シセイラボ 12STEPメソッド</title>
+<meta name="description" content="書けるところだけ入力すればOK。12の問いに答えるごとにブランドの庭が育ち、相談シートが完成。シセイラボに共有すれば、あなたの会社のブランドを創造します。" />
 <link rel="icon" href="favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png" />
@@ -333,7 +333,7 @@
     <div class="spacer"></div>
     <div class="acts">
       <button class="btn outline" id="soundBtn" onclick="toggleSound()" title="効果音 ON/OFF" style="padding:9px 12px">🔊</button>
-      <button class="btn outline" onclick="resumeSaved()">📄 <span class="btxt">保存中のヒアリングシート</span></button>
+      <button class="btn outline" onclick="resumeSaved()">📄 <span class="btxt">保存中の相談シート</span></button>
       <button class="btn solid" onclick="openSubmit()">☁️ 送信</button>
     </div>
   </div>
@@ -351,7 +351,7 @@
             <div class="pbar"><i id="pbar"></i></div>
           </div>
         </div>
-        <div class="fillnote">これは、シセイラボがあなたの会社のブランドを創造するための<b class="hl">ヒアリングシート</b>です。<b>書けるところだけ</b>入力すればOK。分からない設問は空欄のままでも送信できます。</div>
+        <div class="fillnote">これは、シセイラボがあなたの会社のブランドを創造するための<b class="hl">相談シート</b>です。<b>書けるところだけ</b>入力すればOK。分からない設問は空欄のままでも送信できます。</div>
         <div class="pills" id="pills"></div>
         <div id="stepBody"></div>
       </section>
@@ -389,7 +389,7 @@
   <div class="box" style="max-width:520px">
     <button class="x" onclick="closeSubmit()">×</button>
     <h3>シセイラボに送信</h3>
-    <p style="color:var(--muted);font-size:13px;margin-top:6px">作成中のヒアリングシートをシセイラボへ送信します。書けるところだけ・途中まででもOK。内容をもとにシセイラボがあなたの会社のブランドを創造します（送信内容は保存・確認します）。</p>
+    <p style="color:var(--muted);font-size:13px;margin-top:6px">作成中の相談シートをシセイラボへ送信します。書けるところだけ・途中まででもOK。内容をもとにシセイラボがあなたの会社のブランドを創造します（送信内容は保存・確認します）。</p>
     <div class="field"><label>会社名 <span style="color:#c00">*</span></label><input id="smCompany" type="text" placeholder="株式会社○○" /></div>
     <div class="field"><label>連絡先メール <span style="color:#c00">*</span></label><input id="smEmail" type="email" placeholder="you@example.com" /></div>
     <div id="smStatus" style="font-size:13px;margin-top:14px;color:var(--muted)"></div>
@@ -415,10 +415,10 @@
 <div class="cbanner" id="cbanner"><div class="cc">
   <div class="em">🎉🌳🎉</div>
   <h3>庭が完成しました！</h3>
-  <p>12STEPすべてに答え、あなたのブランドの庭が満開になりました。<br>ヒアリングシートを確認して、シセイラボに共有しましょう。</p>
+  <p>12STEPすべてに答え、あなたのブランドの庭が満開になりました。<br>相談シートを確認して、シセイラボに共有しましょう。</p>
   <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
     <button class="btn outline" onclick="document.getElementById('cbanner').classList.remove('show')">庭を眺める</button>
-    <button class="btn solid" onclick="document.getElementById('cbanner').classList.remove('show');showDoc()">ヒアリングシートを見る 📄</button>
+    <button class="btn solid" onclick="document.getElementById('cbanner').classList.remove('show');showDoc()">相談シートを見る 📄</button>
   </div>
 </div></div>
 <div class="toast" id="toast"></div>
@@ -1008,7 +1008,7 @@ function renderStep(){
     <div class="outputnote">📦 <b>このSTEPの成果物：</b>${s.output}</div>
     <div class="foot">
       <button class="btn outline" ${cur===0?'disabled':''} onclick="prevStep()">← 前へ</button>
-      ${cur===STEPS.length-1?`<button class="btn solid" onclick="showDoc()">ヒアリングシートを見る 📄</button>`:`<button class="btn dark" onclick="nextStep()">保存して次へ →</button>`}
+      ${cur===STEPS.length-1?`<button class="btn solid" onclick="showDoc()">相談シートを見る 📄</button>`:`<button class="btn dark" onclick="nextStep()">保存して次へ →</button>`}
     </div>`;
   document.querySelectorAll('#stepBody textarea[data-q]').forEach(t=>{
     t.addEventListener('input',e=>{ const sn=+e.target.dataset.s,qid=e.target.dataset.q; const had=ans(sn,qid).trim(); setAns(sn,qid,e.target.value); if(!had&&e.target.value.trim()) sfxPop(); updateQScore(sn,qid); refreshDependents(sn,qid); renderPills(); renderGarden(); clearTimeout(window._sv); window._sv=setTimeout(()=>{ save(false); checkStepComplete(sn); },600); });
@@ -1048,7 +1048,7 @@ function showBuild(){ document.getElementById('view-doc').classList.add('hidden'
 function renderDoc(){
   const d=state.updated?new Date(state.updated).toLocaleDateString('ja-JP'):'—', pct=scorePct();
   document.getElementById('docBody').innerHTML=`
-    <div class="dochead"><div class="t">ブランド創造ヒアリングシート</div>
+    <div class="dochead"><div class="t">ブランド創造相談シート</div>
       <div class="s">SHISEILABO 12STEP METHOD　|　作成日：${d}</div>
       <div class="docscore"><span class="g">${gradeFor(pct)}</span><span class="sc"><b>完成度スコア ${pct}%</b>（${totalScore()} / ${maxScore()} pt）<br>${encourageMsg(pct)}</span></div>
       ${monthlyFee(pct)?`<div class="docfee"><span class="dl">月額契約の目安（3〜6ヶ月契約）</span><span class="dv">${monthlyFee(pct)}</span><span class="dn">完成度 ${pct}%・シセイラボ伴走／完成度が高いほどお手頃になります</span></div>`:`<div class="docfee empty">完成度10%以上で、月額契約の目安が表示されます</div>`}
@@ -1063,7 +1063,7 @@ function renderDoc(){
 
 /* 戦略書の全文をプレーンテキスト化（メール本文用） */
 function buildDocText(){
-  const pct=scorePct(); let out='【ブランド創造ヒアリングシート】SHISEILABO 12STEP METHOD\n';
+  const pct=scorePct(); let out='【ブランド創造相談シート】SHISEILABO 12STEP METHOD\n';
   out+='完成度スコア '+pct+'%（'+totalScore()+' / '+maxScore()+' pt）／グレード '+gradeFor(pct)+'\n';
   const fee=monthlyFee(pct); out+='月額契約の目安（3〜6ヶ月契約）：'+(fee||'完成度10%以上で表示')+'\n';
   PHASES.forEach(ph=>STEPS.filter(s=>s.phase===ph.key).forEach(s=>{
